@@ -1,7 +1,7 @@
 {
   "name": "hestia",
-  "version": "1.0.3-beta",
-  "description": "Always-on guardrails and on-demand health checks for Claude Code. Five standing orders run every session — lean, phase discipline, truth-grounding, scope control, memory hygiene. On demand: audit your setup, catch stale files, grade and write rules, prep for unfamiliar tech. Read-only — it recommends, you act.",
+  "version": "1.0.4-beta",
+  "description": "Always-on guardrails and on-demand health checks for Claude Code. Seven standing orders run every session — lean, phase discipline, truth-grounding, scope control, memory hygiene, communication, and formatting. On demand: audit your setup, catch stale files, grade and write rules, prep for unfamiliar tech. Read-only — it recommends, you act.",
   "license": "MIT",
   "author": {
     "name": "Songbird",
