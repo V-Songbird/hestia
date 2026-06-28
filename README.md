@@ -8,7 +8,7 @@ Your `CLAUDE.md` starts clean. Then rules turn vague, instruction files referenc
 
 ---
 
-## ⚡ Install
+## Install
 
 ```
 /plugin marketplace add V-Songbird/claude-plugins
@@ -20,7 +20,7 @@ Your `CLAUDE.md` starts clean. Then rules turn vague, instruction files referenc
 
 ---
 
-## 🧩 How it works
+## How it works
 
 Hestia runs on two tracks: **always-on** standing orders injected into every session, and **on-demand** skills you invoke when you need them.
 
@@ -31,11 +31,11 @@ Hestia runs on two tracks: **always-on** standing orders injected into every ses
 
 | Order | What it enforces |
 | --- | --- |
-| ⚡ **Lean** | Ship the smallest change that fully solves the problem. One line before fifty. Never cut validation, error handling, or security — cut the scaffolding around them. |
-| 📋 **Phase discipline** | Work spanning more than ~3 files or 30 minutes gets a phased breakdown proposed first, not started. |
-| 🔍 **Truth-grounding** | On niche or unfamiliar tech, flag the knowledge gap, collect authoritative sources, and build from them. Training-based confidence is a trap on unfamiliar ground. |
-| 🚧 **Scope control** | Out-of-scope discoveries get parked as `hestia:later <what> — revisit when <trigger>`, not chased inline. |
-| 🧠 **Memory hygiene** | Decisions and their reasoning get saved to memory. Code, file contents, and implementation details do not. |
+| **Lean** | Ship the smallest change that fully solves the problem. One line before fifty. Never cut validation, error handling, or security — cut the scaffolding around them. |
+| **Phase discipline** | Work spanning more than ~3 files or 30 minutes gets a phased breakdown proposed first, not started. |
+| **Truth-grounding** | On niche or unfamiliar tech, flag the knowledge gap, collect authoritative sources, and build from them. Training-based confidence is a trap on unfamiliar ground. |
+| **Scope control** | Out-of-scope discoveries get parked as `hestia:later <what> — revisit when <trigger>`, not chased inline. |
+| **Memory hygiene** | Decisions and their reasoning get saved to memory. Code, file contents, and implementation details do not. |
 
 ### On demand
 
@@ -56,7 +56,7 @@ Hestia runs on two tracks: **always-on** standing orders injected into every ses
 
 ---
 
-## 🚀 Quick start
+## Quick start
 
 ```
 /hestia:checkup
@@ -66,7 +66,7 @@ Run this in any project. Hestia inventories your entire Claude Code setup — `C
 
 ---
 
-## 🗺️ Domain terrain prep
+## Domain terrain prep
 
 Working with a JetBrains plugin SDK? A game server scripting engine? Any technology where Claude's training knowledge might be incomplete or years out of date?
 
@@ -81,7 +81,7 @@ Hestia assesses its own knowledge gaps honestly, clones the source repository lo
 
 ---
 
-## 🔒 Read-only by default
+## Read-only by default
 
 > [!NOTE]
 > Hestia's audits, watchers, and analysis tools **never modify your files**. Checkup, Freshness, Proofreader, and every `lean-*` skill only observe and report.
@@ -90,7 +90,7 @@ The three skills that do write — `author-rules`, `format-rules`, `scribe` — 
 
 ---
 
-## 📁 Files Hestia creates
+## Files Hestia creates
 
 | Path | Purpose |
 | --- | --- |
@@ -101,7 +101,7 @@ The three skills that do write — `author-rules`, `format-rules`, `scribe` — 
 
 ---
 
-## 🏷️ Status
+## Status
 
 `1.0.2-beta` — feature-complete and dogfooded end-to-end across all pillars, including the interactive human-in-the-loop judgment flows. Beta means validated; stable `1.0.0` follows real-world mileage across diverse projects.
 
