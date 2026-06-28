@@ -1,6 +1,26 @@
 # Changelog
 
-All notable changes to Hestia are documented here. Versions are owned by the marketplace manifest, not `plugin.json`.
+All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
+
+## [1.0.3-beta] — 2026-06-28
+
+### Changed — `/hestia:prepare` improvements
+- **Migration mode (Step 1):** new mode gate distinguishes fresh terrain from migrating existing Skills that reference machine-specific absolute paths. Migration path scans `.claude/skills/` for hardcoded roots, skips the YAGNI gate, and repoints refs to `./knowledge/<repo>/...` at Step 5.
+- **Large-repo guard (Step 3):** before cloning, checks estimated repo size. Over ~500 MB, surfaces a choice — clone shallow, add as git submodule, or skip and rely on docs. Prevents silent multi-GB pulls.
+- **Sharper triggers:** `when_to_use` now explicitly names "knowledge folder", "clone repo into project", "my skills have hardcoded paths", "repoint existing skills". Added explicit "Do NOT confuse with `/hestia:primer`" note to prevent misrouting.
+
+### Fixed
+- `/hestia:primer` was missing from the README skills table.
+
+### Added
+- `CODE_OF_CONDUCT.md` and `CONTRIBUTING.md`.
+- GitHub Actions CI workflow (`pytest tests/ -v` on Ubuntu, macOS, Windows — Python 3.13).
+- `.gitignore` for `__pycache__`, `.hestia/`, `.hestia-tmp/`, test cache.
+
+### Changed — housekeeping
+- Hestia moved to its own standalone repo (`V-Songbird/hestia`); monorepo sources it as a git submodule.
+- Version ownership moved from `marketplace.json` to this `plugin.json`.
+- Marketplace description and keywords tightened.
 
 ## [1.0.2-beta] — 2026-06-27
 
