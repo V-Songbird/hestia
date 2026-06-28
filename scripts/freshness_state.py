@@ -1,6 +1,6 @@
 """Derive staleness at read-time; record what a checkup CLEARED.
 
-Two linked ideas, both borrowed from kairoi's epistemics:
+Two linked ideas:
 
 1. **Derive staleness, never store a grade.** A persisted "health: 7/10" verdict
    rots — a later session over-trusts it long after it stopped being true. So we
