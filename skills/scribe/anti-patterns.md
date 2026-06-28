@@ -1048,5 +1048,3 @@ Agent(...)
 ---
 
 Cross-referenced against the other scribe reference files (fetched 2026-04-26).
-
-Source: scriptorium/skills/scribe/anti-patterns.md

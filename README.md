@@ -105,8 +105,6 @@ The three skills that do write — `author-rules`, `format-rules`, `scribe` — 
 
 `1.0.2-beta` — feature-complete and dogfooded end-to-end across all pillars, including the interactive human-in-the-loop judgment flows. Beta means validated; stable `1.0.0` follows real-world mileage across diverse projects.
 
-Hestia supersedes the `rulesense` and `scriptorium` plugins. Both remain installable as deprecated stubs that redirect here.
-
 ---
 
 ## License

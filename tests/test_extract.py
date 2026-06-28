@@ -91,7 +91,7 @@ class TestBasicExtraction:
 
 
 # ---------------------------------------------------------------------------
-# Sample project fixture (matches rulesense's worked example)
+# Sample project fixture
 # ---------------------------------------------------------------------------
 
 WORKED_EXAMPLE = (
@@ -118,7 +118,7 @@ WORKED_EXAMPLE = (
 
 
 class TestWorkedExample:
-    """Mirror the rulesense worked-example tests; hestia extracts the same content."""
+    """Verify hestia extracts the worked-example content correctly."""
 
     def test_worked_example_rule_count(self, tmp_path):
         root = _make_project(WORKED_EXAMPLE, tmp_path)

@@ -839,5 +839,3 @@ Invoke mcp__ccd_session__spawn_task with:
 ---
 
 Source: https://code.claude.com/docs/en/tools-reference (fetched 2026-04-18). The "Harness-specific extensions" section is not part of the canonical reference; entries there are documented from direct harness exposure.
-
-Source: scriptorium/skills/scribe/references/tools.md

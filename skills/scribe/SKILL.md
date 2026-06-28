@@ -142,7 +142,7 @@ Do not dispatch `proofreader` with `run_in_background: true` — you need the re
 
 This step does NOT apply when the user explicitly says they want a draft without verification ("just give me a sketch", "don't run the audit yet"). In every other case, run it.
 
-Note: when working within the hestia plugin, use `/hestia:proofread` — the hestia-namespaced proofreader. When a `rulesense:assay` was referenced in prior workflows, use `/hestia:assess-rules` for the equivalent rules-assessment skill.
+Note: when working within the hestia plugin, use `/hestia:proofread` — the hestia-namespaced proofreader.
 
 ## Structural principle: the SKILL.md body is an orchestrator
 

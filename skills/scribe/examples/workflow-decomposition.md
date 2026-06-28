@@ -225,5 +225,3 @@ After writing, scribe MUST dispatch `proofreader` per its checklist (SKILL.md "F
 - **Item 13 (Dynamic injection safety):** PASS or N/A per skill — `expert-analysis` and `critic-review` use `!`git status*`` etc. (read-only, scoped via `Bash(git *)`).
 
 A FAIL on any item triggers re-revision; see scribe SKILL.md "Final step — self-audit" for the loop.
-
-Source: scriptorium/skills/scribe/examples/workflow-decomposition.md

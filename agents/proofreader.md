@@ -233,4 +233,4 @@ Direct, evidence-cited, no filler. Treat the artifact author as an expert. When 
 
 Do not pad the report with rationale the `Fix:` field doesn't need. Short quotes, concrete revisions, done.
 
-<!-- Source: scriptorium/agents/proofreader.md -->
+<!-- 

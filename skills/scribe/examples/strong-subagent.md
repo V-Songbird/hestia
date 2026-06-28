@@ -95,5 +95,3 @@ If both lists are empty, return only the `### Summary` block with `recommended_a
 5. **Return-channel discipline:** The "Return format" block specifies the literal output shape — headings, bullet structure, key names, and the empty-state contract. The dispatching session can grep the return for `vulnerabilities_total:` without re-parsing prose. Forbidding recap ("do NOT recap files read or commands invoked") prevents the agent from padding the return with intermediate exploration the main session does not need.
 
 6. **Hard stop:** `maxTurns: 8` plus a numbered seven-step workflow guarantees termination even if a Bash call hangs and recovers. Without `maxTurns`, a confused subagent can burn arbitrary tokens before the main session notices.
-
-Source: scriptorium/skills/scribe/examples/strong-subagent.md

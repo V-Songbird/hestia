@@ -117,5 +117,3 @@ The plugin name comes from the plugin's `plugin.json`. Inside command bodies, `$
 - **Putting a command in `.claude/commands/` and expecting `${CLAUDE_SKILL_DIR}` to work.** That variable is skill-only. Commands without a directory have no bundled-files location.
 
 Sources: https://code.claude.com/docs/en/commands ; https://code.claude.com/docs/en/skills (fetched 2026-05-07).
-
-Source: scriptorium/skills/scribe/references/slash-commands.md

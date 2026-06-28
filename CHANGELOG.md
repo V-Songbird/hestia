@@ -41,7 +41,7 @@ First feature-complete, dogfooded release. All six pillars built, conformed to t
 
 ## [0.1.0-alpha] — 2026-06-27
 
-Initial scaffold. Hestia consolidates the `rulesense` and `scriptorium` plugins and the planned `virgil` freshness scope into a single setup-health toolbox.
+Initial scaffold. Absorbs the planned `virgil` freshness scope into a single setup-health toolbox.
 
 ### Added
 - Flagship front door: `/hestia:checkup` — prioritized plain-language audit of CLAUDE.md, rules, agents, skills, hooks, commands
@@ -54,8 +54,6 @@ Initial scaffold. Hestia consolidates the `rulesense` and `scriptorium` plugins 
 - All scripts stdlib-only; Python 3.10+; inter-script JSON contract
 
 ### Supersedes
-- `rulesense` v1.x — rule quality capabilities moved to `/hestia:assess-rules`
-- `scriptorium` — authoring + proofreader moved to `/hestia:scribe` and `/hestia:proofread`
 - `virgil` (planned, never shipped) — staleness detection absorbed into freshness pillar
 
 ### Notes

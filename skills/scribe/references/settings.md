@@ -94,5 +94,3 @@ Don't:
 - Document `defaultShell: "powershell"` without also documenting the `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` prerequisite.
 
 Sources: https://code.claude.com/docs/en/settings ; https://code.claude.com/docs/en/env-vars (fetched 2026-05-07).
-
-Source: scriptorium/skills/scribe/references/settings.md

@@ -231,5 +231,3 @@ Do not paste full hook configs into CLAUDE.md. Configs belong in `settings.json`
 - **Using regex syntax in `FileChanged` matchers.** `FileChanged` splits on `|` into literal filenames; regex characters are not interpreted.
 
 Source: https://code.claude.com/docs/en/hooks (fetched 2026-06-27).
-
-Source: scriptorium/skills/scribe/references/hooks.md

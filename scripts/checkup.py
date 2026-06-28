@@ -23,7 +23,7 @@ import freshness_state as fresh_mod
 import refs as refs_mod
 from _lib import Finding, emit, limit_note, rank_findings, read_text
 
-CLAUDE_MD_SOFT_MAX = 200   # scriptorium guidance: CLAUDE.md stays small
+CLAUDE_MD_SOFT_MAX = 200   # CLAUDE.md stays small
 SKILL_SOFT_MAX = 500       # SKILL.md body soft cap
 
 _FRONTMATTER = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)

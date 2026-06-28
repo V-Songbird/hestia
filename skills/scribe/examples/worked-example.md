@@ -53,5 +53,3 @@ This is the canonical weak-to-strong illustration for the scribe skill. It shows
 > 8. Mark every todo `completed` as it finishes — never batch. Return control to the user with a concise summary.
 
 The strong version is longer because every tool invocation specifies the full schema with UX-shaping parameters named adjacent to the trigger. Full worked examples for other artifact types live alongside this file in `examples/` (`strong-skill.md`, `strong-claude-md.md`, `strong-subagent.md`, `strong-plan.md`).
-
-Source: scriptorium/skills/scribe/examples/worked-example.md

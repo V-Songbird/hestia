@@ -217,5 +217,3 @@ When generating workflow skills, deliberately omit:
 | Persistent state files (caches, decision logs) absent from the source artifact | Don't invent what wasn't asked for; state risks staleness |
 
 Source: https://code.claude.com/docs/en/features-overview and https://code.claude.com/docs/en/skills (fetched 2026-04-26).
-
-Source: scriptorium/skills/scribe/references/workflow-skill-shapes.md

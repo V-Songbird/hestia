@@ -1,14 +1,9 @@
 """Tests for compose.py — formula verification, regressions, edge cases.
 
-hestia's compose.py reads a single JSON payload from stdin (unlike rulesense
-which used two file args). The payload has {rules, source_files, project_root,
-config}. F3/F8 factors must already be in rule["factors"] before calling
-compose — hestia's pipeline pipes them in from parse_judgment.
-
-Key differences from rulesense:
-- No schema_version mismatch checks (hestia compose doesn't validate that)
-- No patch merge step — factors are already in the rules dict
-- Conflict detection and enforcement suggestions are the same
+hestia's compose.py reads a single JSON payload from stdin. The payload has
+{rules, source_files, project_root, config}. F3/F8 factors must already be
+in rule["factors"] before calling compose — hestia's pipeline pipes them in
+from parse_judgment.
 """
 
 import json

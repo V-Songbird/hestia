@@ -139,5 +139,3 @@ This skill drives the review pipeline only — it never modifies code, never pus
 5. **Plan-mode gates (checklist item 5).** Step 6 uses both `EnterPlanMode` (with `{}` since it takes no parameters) and `ExitPlanMode`, with an explicit justification for omitting `allowedPrompts`.
 6. **Subagent ambiguity resolution (checklist item 6).** Scope confirmation in Step 2 happens before the `Agent` dispatch in Step 3, and Step 3 states the constraint inline so a future maintainer cannot accidentally reorder.
 7. **Literal tool names with directive verbs (checklist item 7).** Every tool name appears literally next to its trigger — `MUST invoke AskUserQuestion`, `ALWAYS invoke TodoWrite`, `MUST dispatch Agent`, `MUST invoke Bash`, `MUST invoke EnterPlanMode`. No weasel verbs (`should consider`, `may want to`) anywhere in the example.
-
-Source: scriptorium/skills/scribe/examples/strong-skill.md

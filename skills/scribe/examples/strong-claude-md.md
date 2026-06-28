@@ -92,5 +92,3 @@ Migration-related guidance lives in `.claude/rules/migrations.md` with `paths: [
 7. **`@docs/contributing.md` import** illustrates the import syntax (max 5 hops per `references/claude-md.md`) without embedding the full contributing content inline — keeps CLAUDE.md under the ~200-line guidance.
 8. **Path-specific rules via `.claude/rules/migrations.md`** rather than inlining migration guidance — matches the recommended pattern.
 9. **Literal tool names with directive verbs** throughout — `invoke Bash`, `invoke AskUserQuestion`, `invoke TodoWrite`, `do NOT commit`, `do NOT invent`. No weasel verbs.
-
-Source: scriptorium/skills/scribe/examples/strong-claude-md.md

@@ -163,5 +163,3 @@ Summarize the change in 3 sections:
 The injections fire once when the skill renders. The model sees actual diff filenames and comment text, never the `gh` commands.
 
 Source: https://code.claude.com/docs/en/skills#inject-dynamic-context (fetched 2026-04-26).
-
-Source: scriptorium/skills/scribe/references/dynamic-context.md

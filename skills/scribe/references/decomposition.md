@@ -170,5 +170,3 @@ Six points where the decomposition has multiple defensible answers. The skill MU
 For a 286-line monolithic Workflow.md decomposed into 5 skills + 2 subagents (flagged) + CLAUDE.md hub + workflow-reference.md, with line-range provenance for every extracted piece, see [../examples/workflow-decomposition.md](../examples/workflow-decomposition.md).
 
 Source: https://code.claude.com/docs/en/features-overview (fetched 2026-04-26).
-
-Source: scriptorium/skills/scribe/references/decomposition.md

@@ -124,5 +124,3 @@ CLAUDE.md instructions that reference tools must use the same naming rules as sk
 - Same phrasing rules apply whether the instruction lives in CLAUDE.md, a rule file, a skill, or a command.
 
 Source: https://code.claude.com/docs/en/memory (fetched 2026-06-27).
-
-Source: scriptorium/skills/scribe/references/claude-md.md

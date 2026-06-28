@@ -147,5 +147,3 @@ Plan Mode (`plan`) blocks all writes/exec. `ExitPlanMode` accepts optional `allo
 | Replacing `autoMode.soft_deny` | All built-in safety rules vanish | Always start from `claude auto-mode defaults`, edit, then save |
 
 Source: https://code.claude.com/docs/en/permissions (fetched 2026-05-07).
-
-Source: scriptorium/skills/scribe/references/permissions.md

@@ -227,5 +227,3 @@ Nested discovery: when working with files under `packages/frontend/`, Claude Cod
 - Raise the budget with `SLASH_COMMAND_TOOL_CHAR_BUDGET`, or trim `description` + `when_to_use` (front-load key use case — capped at 1,536 chars per entry regardless of global budget).
 
 Source: https://code.claude.com/docs/en/skills (fetched 2026-06-27).
-
-Source: scriptorium/skills/scribe/references/skill-authoring.md

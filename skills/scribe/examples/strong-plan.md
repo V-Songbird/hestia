@@ -177,5 +177,3 @@ surface the session-wide scope caveat alongside it.
    defeating the point of the pre-approval. Keep the list short and
    exact so the corresponding `permissions.allow` entries stay
    narrow.
-
-Source: scriptorium/skills/scribe/examples/strong-plan.md
