@@ -39,11 +39,6 @@ Hestia runs on two tracks: **always-on** standing orders injected into every ses
 
 ### On demand
 
-<details>
-<summary>View all skills</summary>
-
-<br>
-
 | You want to… | Invoke |
 | --- | --- |
 | Full health check of your Claude Code setup | `/hestia:checkup` |
@@ -58,8 +53,6 @@ Hestia runs on two tracks: **always-on** standing orders injected into every ses
 | Review a diff for over-engineering | `/hestia:lean-review` |
 | Scan the whole codebase for bloat | `/hestia:lean-audit` |
 | See all deferred shortcuts | `/hestia:debt` |
-
-</details>
 
 ---
 
