@@ -36,6 +36,8 @@ Hestia runs on two tracks: **always-on** standing orders injected into every ses
 | **Truth-grounding** | On niche or unfamiliar tech, flag the knowledge gap, collect authoritative sources, and build from them. Training-based confidence is a trap on unfamiliar ground. |
 | **Scope control** | Out-of-scope discoveries get parked as `hestia:later <what> — revisit when <trigger>`, not chased inline. |
 | **Memory hygiene** | Decisions and their reasoning get saved to memory. Code, file contents, and implementation details do not. |
+| **Communication** | Lead with the answer, not the reasoning. Match technical depth to the vocabulary the user used. Skip hedging and jargon the user didn't introduce. |
+| **Formatting** | Use tables, bullets, and separators when structure genuinely reduces scanning effort. Don't impose structure on a flat answer. |
 
 ### On demand
 
@@ -104,7 +106,7 @@ The three skills that do write — `author-rules`, `format-rules`, `scribe` — 
 
 ## Status
 
-`1.0.2-beta` — feature-complete and dogfooded end-to-end across all pillars, including the interactive human-in-the-loop judgment flows. Beta means validated; stable `1.0.0` follows real-world mileage across diverse projects.
+`1.0.4-beta` — feature-complete and dogfooded end-to-end across all pillars, including the interactive human-in-the-loop judgment flows. Beta means validated; stable `1.0.0` follows real-world mileage across diverse projects.
 
 ---
 

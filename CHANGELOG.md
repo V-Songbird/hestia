@@ -2,6 +2,19 @@
 
 All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
 
+## [1.0.4-beta] — 2026-06-28
+
+### Added — companion communication & formatting orders
+
+Two new always-on standing orders added to `doctrine.md`, with full support across all verbosity levels (`lean`, `trim`, `bare`, `off`) and the injection ledger.
+
+- **Communication:** Lead with the answer, not the reasoning. Match technical depth to the vocabulary the user used. Skip hedging, over-explanation, and jargon the user did not introduce first.
+- **Formatting:** Use tables, bullets, headers, and separators when they genuinely reduce scanning effort — comparing options, parallel items, distinct topic shifts. Do not impose structure on a flat answer.
+
+Both orders are `critical=no build=no`: injected in full at `lean`, terse at `trim`, dropped at `bare`, excluded from subagent context (communication style is the orchestrating session's concern, not the subagent's).
+
+`KNOWN_ORDERS` in `scripts/injection_ledger.py` updated to include `communication` and `formatting` so the self-audit ledger can track whether they earn their always-on slot.
+
 ## [1.0.3-beta] — 2026-06-28
 
 ### Changed — `/hestia:prepare` improvements

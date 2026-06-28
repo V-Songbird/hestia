@@ -32,7 +32,7 @@ from pathlib import Path
 # The standing-order ids match the build-governing subset injected into
 # subagents (see hooks/companion-inject.py). Free-form ids are accepted too —
 # the ledger never rejects an id — but these are the canonical ones.
-KNOWN_ORDERS = ("lean", "phases", "truth-grounding", "scope", "memory")
+KNOWN_ORDERS = ("lean", "phases", "truth-grounding", "scope", "memory", "communication", "formatting")
 
 
 def project_dir() -> Path:
