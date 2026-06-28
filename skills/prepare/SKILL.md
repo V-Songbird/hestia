@@ -2,16 +2,23 @@
 name: prepare
 description: >-
   Grounds Claude in a niche or unfamiliar technology domain before any code is
-  written. Guides Claude to assess its own knowledge gaps honestly, gather
-  authoritative sources from the user, identify what Skills and Rules would
-  prevent domain-specific mistakes, and build them — all before development
-  starts. Read-only until the user approves what to build at the terrain-building gate.
+  written. Clones authoritative source repositories into a local ./knowledge/
+  folder, then builds pointer-index Skills that point directly at source lines
+  rather than paraphrased summaries. Also handles migrating existing Skills
+  that reference machine-specific absolute paths to use the in-project
+  ./knowledge/ folder instead. Read-only until the user approves what to build
+  at the terrain-building gate.
 when_to_use: >-
-  Trigger when the user says "prepare the terrain for [domain]", "I'm building
-  a JetBrains plugin", "I'm working with [obscure SDK/framework]", "ground
-  yourself in X before we start", "/hestia:prepare", or when Claude detects it
-  is about to write code for a niche, version-sensitive, or specialist ecosystem
-  where training knowledge may be incomplete or outdated.
+  Trigger on: "prepare the terrain for [domain]", "I'm building a JetBrains
+  plugin / working with [obscure SDK]", "ground yourself in X before we start",
+  "set up a knowledge folder", "clone the repo into the project", "bring the
+  source into the project", "my skills have hardcoded / absolute paths", "I
+  want my skills to point at local source instead of D:\\ paths",
+  "repoint existing skills to use a knowledge folder", "/hestia:prepare", or
+  when Claude is about to write code for a niche, version-sensitive, or
+  specialist ecosystem where training knowledge may be incomplete or outdated.
+  Do NOT confuse with /hestia:primer — that skill installs a starter rules
+  file; this skill clones repos and builds domain knowledge artifacts.
 allowed-tools: Bash, Read, Write, AskUserQuestion, WebFetch
 disable-model-invocation: true
 ---
@@ -61,7 +68,27 @@ MUST invoke `TaskUpdate` with the captured `taskId` immediately before
 starting each step (`in_progress`) and immediately upon finishing (`completed`).
 Never leave multiple tasks `in_progress` simultaneously.
 
-## Step 1 — Identify the domain
+## Step 1 — Identify the domain and mode
+
+First, MUST invoke `AskUserQuestion` to detect whether this is a greenfield
+preparation or a migration of existing Skills:
+
+- **question**: `"Are we setting up terrain from scratch, or do you have existing Skills with paths that need migrating to a local knowledge folder?"`
+- **header**: `"Mode"`
+- **multiSelect**: `false`
+- **options**:
+  - `{ label: "Fresh terrain", description: "No existing skills for this domain yet. I'll gather sources, assess gaps, and build Skills + Rules." }`
+  - `{ label: "Migrate existing skills", description: "I already have Skills that reference absolute or machine-specific paths (e.g. D:\\Projects\\...). Bring those repos into ./knowledge/ and repoint the references." }`
+
+**If "Migrate existing skills":** scan the project's `.claude/skills/` tree for
+any absolute paths or machine-specific path patterns (e.g. `D:\`, `C:\`,
+`/home/`, `/Users/`). List every unique external repo root found. Then jump
+directly to Step 3 with those repos as the source list — skip Steps 2 and 4's
+YAGNI gate (the gaps are already proven by the existing skills). At Step 5,
+instead of building new Skills, repoint the references in each existing SKILL.md
+from the old absolute path to `./knowledge/<repo-name>/...`.
+
+**If "Fresh terrain":** continue below.
 
 MUST invoke `AskUserQuestion`:
 
@@ -115,10 +142,15 @@ MUST invoke `AskUserQuestion`:
 
 After the user responds, collect every URL and file path they provide. Then:
 
-- For each GitHub repository URL: MUST invoke `Bash` to clone it locally
-  (`git clone --depth 1 <url> ./knowledge/<lib-name>`) so the source is
-  navigable on disk. Record the cloned path — pointer skills will reference it.
-  Also MUST invoke `WebFetch` on the URL or its README for a quick orientation.
+- For each GitHub repository URL: before cloning, MUST invoke `Bash` to check
+  the repo size (`git ls-remote --size` or a GitHub API call) if the repo is
+  likely large (SDKs, platform source, monorepos). If the estimated size exceeds
+  ~500 MB, surface that to the user and offer: clone anyway (shallow, `--depth 1`),
+  use a git submodule (`git submodule add <url> ./knowledge/<lib-name>`), or
+  skip and rely on documentation URLs only. For repos under ~500 MB, proceed
+  directly with `git clone --depth 1 <url> ./knowledge/<lib-name>`. Record the
+  cloned/submodule path — pointer skills will reference it. Also MUST invoke
+  `WebFetch` on the URL or its README for a quick orientation.
 - For non-GitHub documentation URLs: MUST invoke `WebFetch` with the URL.
   If the page is large, focus on API reference, changelog, and example sections.
 - For each local file path: MUST invoke `Read` with the path.
