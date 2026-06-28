@@ -47,6 +47,7 @@ Hestia runs on two tracks: **always-on** standing orders injected into every ses
 | Grade your rules and CLAUDE.md quality | `/hestia:assess-rules` |
 | Write new rules with live quality scoring | `/hestia:author-rules` |
 | Fix rule formatting | `/hestia:format-rules` |
+| Install the curated starter rules file | `/hestia:primer` |
 | Author a skill, agent, command, or hook | `/hestia:scribe` |
 | Validate an instruction file is well-formed | `/hestia:proofread` |
 | Dial lean enforcement up or down | `/hestia:lean trim\|lean\|bare\|off` |
