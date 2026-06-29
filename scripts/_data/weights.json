@@ -33,7 +33,6 @@
   "F4_no_overlap_score": 0.85,
   "F4_ambiguous_score": 0.65,
   "_F4_score_notes": "F4_no_overlap_score (0.85): score for a glob-scoped rule with no explicit trigger text and no keyword overlap between rule and glob. The paths: frontmatter IS the alignment mechanism; the rule correctly trusts the scope and should not be penalized for being concise. F4_ambiguous_score (0.65): true fallback for the ambiguous case (always_loaded=False AND no globs) — alignment is actually unknowable.",
-  "gap_threshold": 0.63,
   "load_prob_defaults": {
     "always_loaded": 1.0,
     "glob_scoped": 0.5

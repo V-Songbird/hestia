@@ -349,20 +349,6 @@ Every rule is classified into exactly one of three classes:
 
 ---
 
-## Corpus-Level Gap Threshold (`gap_threshold`)
-
-The per-corpus "what to fix first" ranking uses a cumulative-leverage Pareto threshold to pick the smallest set of mandate rules whose improvement would close most of the corpus-level quality gap.
-
-```
-For mandate rules sorted by leverage (descending):
-  count the rules needed until cumulative leverage ≥ gap_threshold × total_leverage
-```
-
-- **Parameter:** `weights.json::gap_threshold` (default `0.63`).
-- **Meaning:** "The N rules listed cover `gap_threshold × 100`% of the corpus's total leverage." At the default of 0.63, the "what to fix first" list covers ~63% of the total achievable quality improvement.
-- **Consumer:** none currently — the former `report.py::_count_gap_rules` consumer was removed as dead code; the `gap_threshold` weight is unused pending a re-wire or removal.
-- **Tunable:** Raising the threshold lists more rules (broader coverage, longer list); lowering it lists fewer (higher-leverage-only).
-
 ## Parallel-Factor Configuration (`parallel_factors`)
 
 F8 (enforceability ceiling) is not in the composite; it reports as a parallel signal that populates the "Hook opportunities" section. Its configuration lives under `weights.json::parallel_factors.F8`:
@@ -382,6 +368,5 @@ The audit emits scores and derived metrics at two different precisions depending
 |---|---|---|
 | `audit.json` (all 0.0–1.0 scores) | 3 decimal places | `rules[].score`, `rules[].pre_floor_score`, `rules[].floor`, `rules[].dominant_weakness_gap`, `rules[].f8_value`, `rules[].layers.*`, `rules[].contributions.*`, `rules[].mechanical_score`, `rules[].leverage`, `files[].file_score`, `files[].length_penalty`, `files[].prohibition_ratio`, `files[].trigger_scope_coherence`, `files[].concreteness_coverage`, `effective_corpus_quality.score`, `corpus_quality.rule_mean_score`, `guideline_quality.score` |
 | Markdown report (`report.py`) | 2 decimal places | All per-rule and per-file tables, rewrite comparisons, factor breakdowns |
-| HTML overview (`generate_overview.py`) | 2 decimal places | All visible score rendering |
 
 **Why this split:** 3-decimal JSON preserves fidelity for diff-comparison across audit runs (a 0.7723 → 0.7841 delta is visible in the data even when both round to `0.78` in the markdown). 2-decimal rendering keeps user-facing output readable. JSON consumers that diff audits over time should always read from `audit.json` directly, not parse the markdown.
