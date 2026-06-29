@@ -2,6 +2,12 @@
 
 All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
 
+## [1.0.5-beta] — 2026-06-28
+
+### Fixed — lean doctrine extraction
+
+`scripts/extract.py` now preserves `Memory` and `Formatting` terse forms intact instead of fragmenting them into sub-bullets. Added `tests/test_extract.py` to guard against regressions.
+
 ## [1.0.4-beta] — 2026-06-28
 
 ### Added — companion communication & formatting orders
