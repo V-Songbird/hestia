@@ -248,6 +248,25 @@ class TestCompoundSplit:
         result = _extract(root)
         assert len(result["rules"]) == 1
 
+    def test_noun_list_and_not_split(self, tmp_path):
+        # "tables, bullets, and separators" is a noun list — the continuation
+        # "separators when..." does not start with an imperative verb, so it
+        # must not be treated as an independent clause.
+        content = (
+            "- Use tables, bullets, and separators when structure reduces "
+            "scanning effort. Don't impose it on a flat answer.\n"
+        )
+        root = _make_project(content, tmp_path)
+        result = _extract(root)
+        assert len(result["rules"]) == 1
+
+    def test_adverb_prefixed_clause_still_splits(self, tmp_path):
+        # "never" and "always" before a verb must still count as clause starts.
+        content = "- Validate all input and never trust client-supplied IDs.\n"
+        root = _make_project(content, tmp_path)
+        result = _extract(root)
+        assert len(result["rules"]) == 2
+
 
 # ---------------------------------------------------------------------------
 # Clarification merge

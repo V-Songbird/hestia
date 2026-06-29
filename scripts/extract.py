@@ -415,7 +415,8 @@ def _try_split(chunk: dict) -> list[dict]:
     and_parts = re.split(r',\s+and\s+|\s+and\s+', text)
     if len(and_parts) >= 2 and all(_has_own_verb(p.strip()) for p in and_parts):
         if not _is_single_process(text):
-            return [_make_subchunk(chunk, p.strip()) for p in and_parts]
+            if all(_starts_as_clause(p.strip()) for p in and_parts[1:]):
+                return [_make_subchunk(chunk, p.strip()) for p in and_parts]
 
     return [chunk]
 
@@ -423,6 +424,22 @@ def _try_split(chunk: dict) -> list[dict]:
 def _has_own_verb(text: str) -> bool:
     """Check if text fragment has its own imperative verb."""
     return has_imperative_verb(text)
+
+
+def _starts_as_clause(text: str) -> bool:
+    """True if text begins as an independent imperative clause (verb-first).
+
+    Checks whether the text opens with a known imperative verb or verb phrase
+    (including negations like 'never', 'don't', 'do not'). Prevents noun-list
+    continuations like "separators when..." from being mistaken for independent
+    clauses when split at ', and'.
+    """
+    t = text.strip().lower()
+    for verb in _ALL_VERBS:
+        v = verb.lower()
+        if t.startswith(v) and (len(t) == len(v) or t[len(v)] in " ,."):
+            return True
+    return False
 
 
 def _is_single_process(text: str) -> bool:
