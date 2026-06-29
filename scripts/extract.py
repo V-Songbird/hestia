@@ -745,22 +745,6 @@ def _build_source_files(artifacts: dict, project_root: Path) -> list[dict]:
     return source_files
 
 
-def _should_ignore(file_path: str, rule_text: str, ignore_patterns: list[str]) -> bool:
-    """Check if a rule matches any ignore pattern."""
-    for pattern in ignore_patterns:
-        pattern = pattern.strip()
-        if ":" in pattern:
-            file_part, _, text_part = pattern.partition(":")
-            file_part = file_part.strip()
-            text_part = text_part.strip().strip('"').strip("'")
-            if file_path == file_part and text_part in rule_text:
-                return True
-        else:
-            if file_path == pattern:
-                return True
-    return False
-
-
 def _build_tooling(inventory: dict) -> dict:
     """Best-effort enforcement-tooling signals from discover() (empty if none)."""
     tooling: dict[str, bool] = {}
@@ -839,10 +823,6 @@ def extract_rules(project_root_arg: str | None) -> dict:
                 if line_num in annotations:
                     category = annotations[line_num]
                     break
-
-            if _should_ignore(sf["path"], rule_text, []):
-                rule_counter -= 1
-                continue
 
             all_rules.append({
                 "id": rule_id,

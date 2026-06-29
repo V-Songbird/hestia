@@ -656,11 +656,7 @@ def cmd_write_promotions(project_root: str) -> None:
     """--write-promotions: write .hestia/PROMOTIONS.md + atomically remove moved rules."""
     import placement
     payload = _lib.read_stdin_json()
-    result = placement.write_promotions(
-        payload,
-        Path(project_root).resolve(),
-        state_dir=STATE_DIR,
-    )
+    result = placement.write_promotions(payload, Path(project_root).resolve())
     _lib.emit(result)
     if result["status"] != "ok":
         sys.exit(1)

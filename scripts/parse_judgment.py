@@ -40,7 +40,6 @@ F8_LEVELS: list[tuple[int, float, float]] = [
 
 REASONING_MAX_LEN = 80
 KNOWN_PATCH_FIELDS = {"F6_patch", "F7_patch", "F1_patch"}
-JUDGMENT_FACTORS = {"F3", "F8"}
 
 
 # ---------------------------------------------------------------------------

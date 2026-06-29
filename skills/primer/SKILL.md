@@ -53,28 +53,6 @@ users may not notice them.
 - Every `Bash` invocation MUST include a short `description` field (5–10
   words) naming its purpose.
 
-## Task tracking
-
-MUST invoke `TaskCreate` for each task below before any other work, capturing
-each returned `taskId`. In non-interactive / SDK sessions, fall back to
-`TodoWrite`. Every task MUST carry paired `content` (imperative) and
-`activeForm` (progressive) fields — they are NOT interchangeable. `content`
-renders when `pending` or `completed`; `activeForm` renders while
-`in_progress`.
-
-Initial tasks (create all up front, with both forms):
-
-1. `{ content: "Load the bundled rules file", activeForm: "Loading the bundled rules file" }` — Phase 1
-2. `{ content: "Detect destination conflict", activeForm: "Detecting destination conflict" }` — Phase 2
-3. `{ content: "Apply the user's chosen action", activeForm: "Applying the user's chosen action" }` — Phase 3
-4. `{ content: "Confirm and report", activeForm: "Confirming and reporting" }` — Phase 4
-
-MUST invoke `TaskUpdate` with the captured `taskId` immediately before
-starting each task (status `in_progress`) and immediately upon finishing
-(status `completed`). Never batch completions. Never leave multiple tasks
-`in_progress` simultaneously. Never start a new task before marking the prior
-one `completed`.
-
 ## Phase 1 — Load the bundled rules file
 
 Invoke `Read` with
@@ -86,7 +64,7 @@ the bundled rules file. Reinstall the hestia plugin and try again." Do not
 attempt to fall back to inline content — the canonical text lives in the
 bundled file.
 
-Mark task 1 `completed` and proceed to Phase 2.
+Proceed to Phase 2.
 
 ## Phase 2 — Detect destination conflict
 
@@ -112,7 +90,7 @@ Phase 3 with action `write-fresh`.
 
 Carry the user's choice into Phase 3 as the action label.
 
-Mark task 2 `completed` and proceed to Phase 3.
+Proceed to Phase 3.
 
 ## Phase 3 — Apply the chosen action
 
@@ -164,7 +142,7 @@ the deduplication step, not this one.
 
 Do nothing. Skip directly to Phase 4 with the cancellation report.
 
-Mark task 3 `completed` and proceed to Phase 4.
+Proceed to Phase 4.
 
 ## Phase 4 — Confirm and report
 
@@ -193,8 +171,6 @@ action taken in Phase 3 and send it verbatim.
 
 > No changes made. Your existing `.claude/rules/recommendation-files.md` is
 > untouched.
-
-Mark task 4 `completed`.
 
 ## Additional resources
 

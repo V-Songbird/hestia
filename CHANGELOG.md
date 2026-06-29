@@ -2,6 +2,17 @@
 
 All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
 
+## [1.3.1-beta] — 2026-06-29
+
+### Changed — checkup routing + lean pass (skill polish + over-engineering review)
+
+- **checkup** now points to `format-rules` when rules exist and to `primer` during onboarding — the two skills earned discoverability through the front door instead of being merged away.
+- **primer** — dropped the four-task tracking ceremony; it was overkill for a one-file copy and cited task tools missing from `allowed-tools`.
+- **Dead code removed** (ponytail-review): `JUDGMENT_FACTORS` (parse_judgment.py), `KNOWN_ORDERS` (injection_ledger.py), `_count_gap_rules` (report.py), and `_should_ignore` + its never-reached caller guard (extract.py).
+- **Fixed** — `--write-promotions` raised `TypeError`: `run_audit.py` passed a `state_dir` kwarg that `placement.write_promotions` doesn't accept, so the assess-rules Promote path crashed. Removed the kwarg.
+
+602 tests pass.
+
 ## [1.3.0-beta] — 2026-06-29
 
 ### Changed — scribe/proofreader retired; rules engine refaced around the user

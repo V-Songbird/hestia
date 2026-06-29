@@ -360,7 +360,7 @@ For mandate rules sorted by leverage (descending):
 
 - **Parameter:** `weights.json::gap_threshold` (default `0.63`).
 - **Meaning:** "The N rules listed cover `gap_threshold × 100`% of the corpus's total leverage." At the default of 0.63, the "what to fix first" list covers ~63% of the total achievable quality improvement.
-- **Consumer:** `report.py::_count_gap_rules` (used by the markdown report to decide how many rules to surface in the "biggest problem" summary).
+- **Consumer:** none currently — the former `report.py::_count_gap_rules` consumer was removed as dead code; the `gap_threshold` weight is unused pending a re-wire or removal.
 - **Tunable:** Raising the threshold lists more rules (broader coverage, longer list); lowering it lists fewer (higher-leverage-only).
 
 ## Parallel-Factor Configuration (`parallel_factors`)

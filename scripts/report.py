@@ -714,24 +714,6 @@ def _suggest_action(rule: dict) -> str:
     return _FRIENDLY_FIXES.get(dw, "—")
 
 
-def _count_gap_rules(rules: list[dict]) -> int:
-    """Count rules contributing most to the quality gap."""
-    mandate = [r for r in rules if r.get("category") == "mandate" and r.get("leverage")]
-    mandate.sort(key=lambda r: r.get("leverage", 0), reverse=True)
-    total_leverage = sum(r.get("leverage", 0) for r in mandate)
-    if total_leverage <= 0:
-        return 0
-    cumulative = 0.0
-    count = 0
-    for r in mandate:
-        cumulative += r.get("leverage", 0)
-        count += 1
-        gap_threshold = _WEIGHTS_DATA.get("gap_threshold", 0.63)
-        if cumulative >= total_leverage * gap_threshold:
-            break
-    return count
-
-
 def render_json(audit: dict) -> str:
     """JSON passthrough for --json mode."""
     return json.dumps(audit, indent=2, ensure_ascii=False)
