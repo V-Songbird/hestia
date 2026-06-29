@@ -2,6 +2,20 @@
 
 All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
 
+## [1.0.6-beta] — 2026-06-29
+
+### Added — per-turn doctrine re-injection via UserPromptSubmit hook
+
+Hestia now re-anchors its four most actionable standing orders on every user prompt, not just at session start. As context grows long the session brief loses its hold; the per-turn micro-nudge keeps doctrine active throughout.
+
+- **`hooks/hooks.json`** — new `UserPromptSubmit` entry pointing at `companion-inject.py`.
+- **`hooks/companion-inject.py`** — new `build_turn_context()` function assembles a single-line micro-nudge from all `turn=yes` orders (`lean`, `truth-grounding`, `scope`, `communication`). New `UserPromptSubmit` branch in `main()` dispatches to it. Attribute parser upgraded to handle quoted values (for `micro="..."`) and hyphenated identifiers (for `id=truth-grounding`).
+- **`skills/lean/doctrine.md`** — preamble updated with persistence anchor ("remain active even as context grows long"). Four `ORDER` markers gain `turn=yes micro="..."` attributes.
+
+Per-turn payload (~25 tokens): `[Hestia] Lean: smallest change that fully solves the problem. · Truth-ground: flag niche-tech knowledge gaps before coding. · Scope: park discoveries with hestia:later <what> — revisit when <trigger>. · Communicate: answer first, match their vocabulary, no hedging.`
+
+`off` mode suppresses the nudge. All other verbosity levels produce the same compact payload — the per-turn injection is already at its terse floor.
+
 ## [1.0.5-beta] — 2026-06-28
 
 ### Fixed — lean doctrine extraction
