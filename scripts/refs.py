@@ -26,6 +26,8 @@ def _looks_like_path(tok: str) -> bool:
     t = tok.strip()
     if not t or any(s in t for s in _SKIP):
         return False
+    if t.startswith("..."):  # prose ellipsis shorthand (.../foo), not a real path
+        return False
     if t.startswith(_DIR_PREFIXES):
         return True
     return "/" in t and bool(_EXT.search(t))
@@ -47,15 +49,29 @@ def extract_refs(text: str) -> list[str]:
     return sorted(refs)
 
 
+_LINE_SUFFIX = re.compile(r":\d+$")
+
+
 def resolve(ref: str, file_dir: Path, root: Path) -> Path:
     """Resolve a reference to an absolute path for an existence check."""
     r = ref[1:] if ref.startswith("@") else ref
-    r = r.split("#", 1)[0]  # drop section anchor
+    r = r.split("#", 1)[0]     # drop section anchor
+    r = _LINE_SUFFIX.sub("", r)  # drop :line suffix (e.g. file.kt:10)
     if r.startswith("~/"):
         return (Path.home() / r[2:])
     if r.startswith(("./", "../")):
-        return (file_dir / r).resolve()
-    return (root / r).resolve()
+        p = (file_dir / r).resolve()
+        if p.exists() or not r.startswith("./"):
+            return p
+        # ./foo didn't exist file-relative; try root-relative as fallback
+        # (prepare skill writes ./knowledge/... meaning project-root-relative)
+        return (root / r[2:]).resolve()
+    # Bare path: project-root primary, file-relative fallback
+    # (handles references/xxx.md citations inside skill subdirs)
+    p = (root / r).resolve()
+    if p.exists():
+        return p
+    return (file_dir / r).resolve()
 
 
 def broken_refs(file_path: str | Path, root: str | Path) -> list[str]:

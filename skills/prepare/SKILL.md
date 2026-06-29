@@ -86,7 +86,7 @@ any absolute paths or machine-specific path patterns (e.g. `D:\`, `C:\`,
 directly to Step 3 with those repos as the source list — skip Steps 2 and 4's
 YAGNI gate (the gaps are already proven by the existing skills). At Step 5,
 instead of building new Skills, repoint the references in each existing SKILL.md
-from the old absolute path to `./knowledge/<repo-name>/...`.
+from the old absolute path to `knowledge/<repo-name>/...`.
 
 **If "Fresh terrain":** continue below.
 
@@ -226,8 +226,8 @@ source to locate exact lines before writing. Do NOT paraphrase — point at the
 source; Claude reads the file directly when it needs depth. Example shape:
 
   **Threading invariant** — must hold read lock before accessing PSI
-  → `./knowledge/platform-sdk/threading/ReadAction.kt:67` (the contract)
-  → `./knowledge/platform-sdk/threading/ReadAction.kt:134` (violation pattern)
+  → `knowledge/platform-sdk/threading/ReadAction.kt:67` (the contract)
+  → `knowledge/platform-sdk/threading/ReadAction.kt:134` (violation pattern)
 
 **Building Rules**
 
