@@ -2,6 +2,18 @@
 
 All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
 
+## [1.1.0-beta] — 2026-06-29
+
+### Added — situational and rotating doctrine injection
+
+Doctrine injection is now tailored to the moment instead of repeating one fixed brief, keeping the standing orders loyal across long sessions and context compression. Supersedes the 1.0.6 per-turn micro-nudge (a single fixed line every turn, which a long session learns to discount as boilerplate).
+
+- **`hooks/hooks.json`** — `SessionStart` now matches `startup|resume|clear|compact`, so the brief re-injects after compaction instead of silently dropping out. New `PreToolUse` group fires the companion hook on edit / write / shell / dispatch / web / plan / ask / skill / SQL / build tools.
+- **`hooks/companion-inject.py`** — routes five moments. `SessionStart` `source` selects the preamble: `startup`/`clear` get the initial preamble, `resume`/`compact` get a re-anchor preamble (anti-drift framing) while keeping the full order bodies, so a re-brief after compaction never loses detail. `UserPromptSubmit` now emits ONE line picked at random from a rotation pool (instead of the same four-in-one line every turn), so no fixed string is there to tune out. `PreToolUse` injects a situational nudge matched to the tool about to run (JSON-wrapped `additionalContext`), and stays silent for unmatched tools — injection only, never gates the call.
+- **`skills/lean/doctrine.md`** — preamble strengthened from descriptive to prescriptive: the orders are instructions in force every response and tool call, off only via `/hestia:lean off`, and "if you are unsure whether an order applies, it does." Adds a re-anchor preamble (`REANCHOR` marker) and a `NUDGES` block holding the rotation + situational lines. Every NUDGES line is an `id`-tagged restatement of an existing order — no rule the order bodies don't already mandate. The now-unused `turn`/`micro` order attributes were removed.
+
+32 companion-hook tests (19 new: re-anchor source routing, turn rotation, PreToolUse JSON contract and silence on unmatched tools); 602 total in the suite.
+
 ## [1.0.7-beta] — 2026-06-29
 
 ### Fixed — freshness skill false positives in refs.py
