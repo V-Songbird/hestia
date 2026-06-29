@@ -1,7 +1,7 @@
 {
   "name": "hestia",
-  "version": "1.4.0-beta",
-  "description": "A calm companion for Claude Code. Keeps Claude talking to you as a stakeholder — what changed and why it matters, not the play-by-play — and keeps your project tidy: parks deferred work, saves decisions to memory, catches stale instruction files. Read-only by default.",
+  "version": "1.5.0-beta",
+  "description": "A calm companion for Claude Code. Keeps Claude's answers simple and clear — the outcome, not the jargon or the step-by-step — and keeps your project tidy: parks deferred work, saves decisions to memory, catches stale instruction files. Read-only by default.",
   "license": "MIT",
   "author": {
     "name": "Songbird",

@@ -61,6 +61,15 @@ def pretool_event(tool_name: str) -> str:
     return json.dumps({"hook_event_name": "PreToolUse", "tool_name": tool_name})
 
 
+def posttool_event(session_id: str = "s", tool_name: str = "Read") -> str:
+    return json.dumps({"hook_event_name": "PostToolUse",
+                       "tool_name": tool_name, "session_id": session_id})
+
+
+def userprompt_event(session_id: str = "s") -> str:
+    return json.dumps({"hook_event_name": "UserPromptSubmit", "session_id": session_id})
+
+
 @pytest.fixture
 def project(tmp_path):
     p = tmp_path / "project"
@@ -277,3 +286,54 @@ class TestRobustness:
             r = run_hook(project, session_event())
             assert r.returncode == 0
             assert COMMS_FULL in r.stdout  # full brief, not off
+
+
+# ---------------------------------------------------------------------------
+# PostToolUse — boundary re-injection (count tool calls, re-anchor near handoff)
+# ---------------------------------------------------------------------------
+
+class TestBoundary:
+    def _fired_at(self, project, n, session="s"):
+        """Run n PostToolUse calls; return the 1-based indices that emitted."""
+        return [i for i in range(1, n + 1)
+                if run_hook(project, posttool_event(session)).stdout.strip()]
+
+    def test_silent_under_threshold(self, project):
+        run_hook(project, userprompt_event())               # reset the run
+        assert self._fired_at(project, 9) == []
+
+    def test_fires_at_threshold(self, project):
+        run_hook(project, userprompt_event())
+        assert self._fired_at(project, 10) == [10]
+
+    def test_refires_every_threshold(self, project):
+        run_hook(project, userprompt_event())
+        assert self._fired_at(project, 20) == [10, 20]
+
+    def test_payload_is_boundary_nudge(self, project):
+        run_hook(project, userprompt_event())
+        out = ""
+        for _ in range(10):
+            out = run_hook(project, posttool_event()).stdout
+        ctx = json.loads(out)["hookSpecificOutput"]["additionalContext"]
+        assert ctx.startswith("[Hestia] Long run")
+        assert "handoff" in ctx
+
+    def test_user_prompt_resets_counter(self, project):
+        run_hook(project, userprompt_event())
+        self._fired_at(project, 10)                          # fires at 10
+        run_hook(project, userprompt_event())               # new prompt -> reset
+        assert self._fired_at(project, 9) == []             # silent again
+
+    def test_session_change_resets(self, project):
+        run_hook(project, userprompt_event("a"))
+        for _ in range(9):
+            run_hook(project, posttool_event("a"))          # count 9 on session a
+        # switching session resets to count 1 -> silent (no fire at the 10th-overall call)
+        assert run_hook(project, posttool_event("b")).stdout.strip() == ""
+
+    def test_off_silences_post_tool(self, project):
+        set_mode(project, "off")
+        run_hook(project, userprompt_event())
+        for _ in range(12):
+            assert run_hook(project, posttool_event()).stdout.strip() == ""

@@ -1,7 +1,7 @@
 <div align="center">
   <img src="logo.svg" alt="Hestia" width="120" />
   <h1>Hestia</h1>
-  <p><strong>Claude Code's calm companion</strong> — keeps Claude talking to you as a stakeholder, and keeps your project tidy.</p>
+  <p><strong>Claude Code's calm companion</strong> — keeps Claude's answers simple and clear, and keeps your project tidy.</p>
 </div>
 
 Claude is the expert who can build anything — but ask about his work and he can't stop talking: every step narrated, every decision explained, in language only another engineer would follow. Hestia rests a hand on his shoulder and reminds him of the room he's in: tell the person what changed and why it matters, not the play-by-play. And while he builds, Hestia keeps the workspace tidy — parking deferred work, saving decisions, catching instruction files that have gone stale.
@@ -33,7 +33,7 @@ Hestia runs on two tracks: **always-on** reminders injected into every session, 
 
 | Reminder | What it keeps in mind |
 | --- | --- |
-| **Talk to the stakeholder** | The reader owns the outcome and may not be technical. Lead with what changed and why it matters, in their words. Skip the play-by-play, the hedging, and jargon they didn't use. Say the plan before big work, give depth when asked, and be honest about what you don't know. |
+| **Keep it simple and clear** | Lead with the outcome in plain words — not the step-by-step of how Claude got there, not jargon the user didn't introduce. Terse is welcome; clarity wins when brevity would blur the meaning. Especially: when a message is the user's first look at a long run, re-ground the reader instead of continuing the working thread. |
 | **Keep the workspace tidy** | Park out-of-scope finds as `hestia:later <what> — revisit when <trigger>` instead of chasing them. Save decisions and their reasoning to memory — never code or file contents. |
 
 ### On demand

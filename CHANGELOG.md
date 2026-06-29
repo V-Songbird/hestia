@@ -2,6 +2,22 @@
 
 All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
 
+## [1.5.0-beta] — 2026-06-29
+
+### Added — boundary re-injection (PostToolUse)
+
+The re-grounding reminder previously fired only at SessionStart — hundreds of tool calls away from the long-run handoff it governs (recency decay). A new `PostToolUse` hook now counts tool calls since the last user prompt and re-injects the reminder once a run crosses `BOUNDARY_THRESHOLD` (10), then every 10 calls after, so the last re-anchor lands within ~10 tool calls of the handoff instead of back at session start. The counter resets on each user prompt; it's silent below threshold and when `lean off`.
+
+- **`hooks/hooks.json`** — new `PostToolUse` matcher (all tools, to count the whole run).
+- **`hooks/companion-inject.py`** — per-run tool counter in `.hestia/.run-state.json` (session-scoped, best-effort), `BOUNDARY_NUDGE`, `_boundary_due` / `_reset_run`; `read_input` now also reads `session_id`.
+- Known limits: periodic, not exact-boundary (no hook fires *before* the final message, so it can't land exactly at the handoff); `BOUNDARY_NUDGE` is hook-owned text that mirrors the doctrine and could drift.
+
+### Changed — identity copy leads with "simple and clear"
+
+Reframed the README, `plugin.json`, and marketplace descriptions away from "talk to you as a stakeholder" (that was one illustration) toward the real premise: keep Claude's answers simple and clear — the outcome, not the jargon or the step-by-step most users don't want. The injected doctrine is unchanged.
+
+580 tests pass (7 new boundary tests).
+
 ## [1.4.0-beta] — 2026-06-29
 
 ### Changed — communication reminder rewritten; verbosity levels removed

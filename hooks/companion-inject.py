@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Hestia companion brief injection hook.
 
-Runs on SessionStart, SubagentStart, UserPromptSubmit, and PreToolUse. Reads
-`.hestia/lean-mode` (on unless the file says `off`) and injects the companion
-doctrine as hidden context, tailored to each moment. Emits nothing when off.
+Runs on SessionStart, SubagentStart, UserPromptSubmit, PreToolUse, and
+PostToolUse. Reads `.hestia/lean-mode` (on unless the file says `off`) and injects
+the companion doctrine as hidden context, tailored to each moment. Nothing when off.
 
   - SessionStart  -> the full brief (both reminder bodies).
     The SessionStart `source` selects the preamble framing, not the body:
@@ -20,10 +20,14 @@ doctrine as hidden context, tailored to each moment. Emits nothing when off.
   - PreToolUse    -> ONE situational line picked at random from the NUDGES lines
     whose tools= matcher matches the tool about to run. Emits nothing for an
     unmatched tool. Injection only; never gates the tool call.
+  - PostToolUse   -> counts tool calls since the last user prompt; once the run
+    crosses BOUNDARY_THRESHOLD it re-injects the re-grounding reminder (then again
+    every BOUNDARY_THRESHOLD calls), so it lands near the eventual handoff instead
+    of hundreds of calls back at SessionStart. Silent below threshold.
 
 Output contract (native Claude Code):
-  - SessionStart / UserPromptSubmit -> raw text on stdout is added to context.
-  - SubagentStart / PreToolUse      -> context must be wrapped in
+  - SessionStart / UserPromptSubmit          -> raw text on stdout is added.
+  - SubagentStart / PreToolUse / PostToolUse -> context must be wrapped in
     hookSpecificOutput JSON (raw stdout is ignored for these events).
 
 Best-effort throughout: a stale or missing file must never break the hook.
@@ -54,6 +58,16 @@ FALLBACK = (
 
 SUBAGENT_FALLBACK = FALLBACK
 TURN_FALLBACK = "[Hestia] " + FALLBACK
+
+# Boundary re-injection: after this many tool calls in one run, re-anchor the
+# re-grounding reminder so it lands near the handoff (not back at SessionStart).
+BOUNDARY_THRESHOLD = 10
+BOUNDARY_NUDGE = (
+    "[Hestia] Long run — your next message to the user is a handoff, not a "
+    "continuation. Open with the outcome (what's now true, not what you did), "
+    "give each file or flag its own plain clause, and drop the working shorthand. "
+    "If something blocks you, lead with it."
+)
 
 # id=<bareword> | tools="<quoted>"  — the value is either a quoted string or a bareword.
 _ATTR_RE = re.compile(r'(\w+)=(?:"([^"]*)"|([\w-]+))')
@@ -221,14 +235,14 @@ def build_subagent_context() -> str:
     return _assemble(d["initial"], pieces) if pieces else SUBAGENT_FALLBACK
 
 
-def read_input() -> tuple[str, str | None, str | None]:
-    """(hook_event_name, source, tool_name) from stdin; safe defaults on bad input."""
+def read_input() -> tuple[str, str | None, str | None, str | None]:
+    """(hook_event_name, source, tool_name, session_id); safe defaults on bad input."""
     try:
         data = json.loads(sys.stdin.read() or "{}")
     except (ValueError, OSError):
-        return "SessionStart", None, None
+        return "SessionStart", None, None, None
     return (data.get("hook_event_name") or "SessionStart",
-            data.get("source"), data.get("tool_name"))
+            data.get("source"), data.get("tool_name"), data.get("session_id"))
 
 
 def _wrap(event: str, context: str) -> str:
@@ -237,19 +251,65 @@ def _wrap(event: str, context: str) -> str:
     })
 
 
+def _run_state_path() -> Path:
+    return project_dir() / ".hestia" / ".run-state.json"
+
+
+def _reset_run(session_id: str | None) -> None:
+    """A new user prompt starts a fresh run. Best-effort; never break the hook."""
+    try:
+        p = _run_state_path()
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps({"session": session_id or "", "count": 0, "fired_at": 0}),
+                     encoding="utf-8")
+    except OSError:
+        pass
+
+
+def _boundary_due(session_id: str | None) -> bool:
+    """Increment this run's tool counter; True when it is time to re-anchor.
+
+    Fires at BOUNDARY_THRESHOLD and every BOUNDARY_THRESHOLD calls after, so the
+    last re-anchor is within BOUNDARY_THRESHOLD tool calls of the handoff. A
+    changed session id resets the counter. Best-effort; never break the hook."""
+    try:
+        st = json.loads(_run_state_path().read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        st = {}
+    if st.get("session") != (session_id or ""):
+        st = {"session": session_id or "", "count": 0, "fired_at": 0}
+    st["count"] = int(st.get("count", 0)) + 1
+    due = (st["count"] >= BOUNDARY_THRESHOLD
+           and st["count"] - int(st.get("fired_at", 0)) >= BOUNDARY_THRESHOLD)
+    if due:
+        st["fired_at"] = st["count"]
+    try:
+        p = _run_state_path()
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps(st), encoding="utf-8")
+    except OSError:
+        pass
+    return due
+
+
 def main() -> None:
-    event, source, tool_name = read_input()
+    event, source, tool_name, session_id = read_input()
     if is_off():
         sys.exit(0)
 
     if event == "SubagentStart":
         payload = _wrap("SubagentStart", build_subagent_context())
+    elif event == "PostToolUse":
+        if not _boundary_due(session_id):
+            sys.exit(0)  # under threshold -> stay silent
+        payload = _wrap("PostToolUse", BOUNDARY_NUDGE)
     elif event == "PreToolUse":
         context = build_pretool_context(tool_name)
         if not context:
             sys.exit(0)  # no nudge for this tool -> stay silent
         payload = _wrap("PreToolUse", context)
     elif event == "UserPromptSubmit":
+        _reset_run(session_id)  # a new user prompt starts a fresh run
         payload = build_turn_context()  # raw stdout
     else:
         # SessionStart (and any unexpected event) -> full brief as raw stdout.
