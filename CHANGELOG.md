@@ -2,6 +2,19 @@
 
 All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
 
+## [1.0.7-beta] — 2026-06-29
+
+### Fixed — freshness skill false positives in refs.py
+
+Three distinct false-positive classes eliminated from the reference scanner, plus a pre-existing `:line` suffix gap:
+
+- **Class 1 — `./knowledge/...` from `prepare` skill:** `resolve()` now tries project-root-relative as a fallback when `./foo` doesn't exist file-relative. The `prepare` skill example paths are also corrected to bare `knowledge/...` (no `./` prefix), aligning its output with the scanner's project-root-relative convention for bare paths.
+- **Class 2 — `references/xxx.md` inside skill subdirs:** `resolve()` now tries file-relative as a fallback when root-relative lookup fails, correctly handling SKILL.md files that cite their own `references/` subfolder.
+- **Class 3 — `.../tasks/Foo.kt` prose ellipsis:** `_looks_like_path()` now rejects tokens starting with `...`, preventing prose shorthand from being treated as a broken file reference.
+- **Bonus — `:line` suffix stripping:** `resolve()` now strips `:\d+` suffixes before the existence check (e.g. `File.kt:10` → checks `File.kt`). This was a pre-existing gap that masked Class 1.
+
+Adds `tests/test_refs.py` with 21 tests covering all three classes and verifying existing correct behaviours are preserved.
+
 ## [1.0.6-beta] — 2026-06-29
 
 ### Added — per-turn doctrine re-injection via UserPromptSubmit hook

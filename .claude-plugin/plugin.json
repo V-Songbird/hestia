@@ -1,6 +1,6 @@
 {
   "name": "hestia",
-  "version": "1.0.6-beta",
+  "version": "1.0.7-beta",
   "description": "Always-on guardrails for Claude Code. Seven standing orders every session — lean, phase discipline, truth-grounding, scope control, memory hygiene, communication, formatting. On demand: audit setup, catch stale files, grade and write rules, prep for unfamiliar tech. Read-only — recommends, you act.",
   "license": "MIT",
   "author": {
