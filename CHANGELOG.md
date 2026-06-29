@@ -2,6 +2,18 @@
 
 All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
 
+## [1.4.0-beta] — 2026-06-29
+
+### Changed — communication reminder rewritten; verbosity levels removed
+
+- **doctrine.md** — the communication reminder is now a single *triggered* instruction adapted from Anthropic's Claude Fable 5 prompting guidance: when a message is the user's first look at work they didn't watch, write it as a re-grounding — outcome first, drop the working shorthand. This replaces the eight generic communication sub-rules, which restated defaults the model already follows (and which over-prescription can degrade). Inter-step narration is explicitly left alone — the guidance blesses it; the target is the final message after a long run.
+- **`/hestia:lean` is now on/off only.** The `trim` / `lean` / `bare` verbosity levels are gone — the companion is injected or it isn't. Legacy `.hestia/lean-mode` values (`lean`/`trim`/`bare`) are read as on. The `critical=` order attribute (which only existed to support `bare`) is removed; `read_mode` → `is_off`.
+- READMEs updated to `/hestia:lean on\|off`.
+
+Rationale: four runs (incl. a `/lean off` control) plus a two-session A/B showed the old generic, always-on communication prose had no attributable effect on the deliverable. The fix targets the one moment where injection has a real delta — the final summary of a long agentic run — with empirically-tuned wording.
+
+573 tests pass.
+
 ## [1.3.1-beta] — 2026-06-29
 
 ### Changed — checkup routing + lean pass (skill polish + over-engineering review)

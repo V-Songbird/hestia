@@ -29,7 +29,7 @@ Hestia runs on two tracks: **always-on** reminders injected into every session, 
 ### Always on
 
 > [!NOTE]
-> Two reminders are injected automatically into every session. You never invoke them — they run. Tune how assertively they fire with `/hestia:lean trim\|lean\|bare\|off`.
+> Two reminders are injected automatically into every session. You never invoke them — they run. They're on by default; turn them off for a project with `/hestia:lean off`.
 
 | Reminder | What it keeps in mind |
 | --- | --- |
@@ -43,7 +43,7 @@ Hestia runs on two tracks: **always-on** reminders injected into every session, 
 | Full health check of your Claude Code setup | `/hestia:checkup` |
 | Scan for stale setup files | `/hestia:freshness` |
 | See all deferred `hestia:later` work | `/hestia:debt` |
-| Tune how concise the companion keeps Claude | `/hestia:lean trim\|lean\|bare\|off` |
+| Turn the companion on or off | `/hestia:lean on\|off` |
 | Check whether your rules and CLAUDE.md reach Claude | `/hestia:assess-rules` |
 | Write new rules with live quality scoring | `/hestia:author-rules` |
 | Fix rule formatting | `/hestia:format-rules` |

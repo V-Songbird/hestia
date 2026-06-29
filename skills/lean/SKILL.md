@@ -1,38 +1,34 @@
 ---
 name: lean
-description: Controls how concise Hestia keeps Claude's replies — how assertively the companion reminds Claude to talk to the user as a stakeholder and keep the workspace tidy. Set trim, lean, bare, or off.
-when_to_use: Use when the user wants to change how assertively Hestia's companion reminders fire — "be more concise", "lean mode", "say less", "stop over-explaining", "tone down the companion", or invokes /hestia:lean [trim|lean|bare|off].
-argument-hint: [trim|lean|bare|off]
+description: Turns Hestia's companion reminders on or off for the current project. The two reminders — talk to the user as a stakeholder, and keep the workspace tidy — are on by default.
+when_to_use: Use when the user wants to switch Hestia's companion reminders off or back on — "turn off hestia", "stop the companion", "mute the reminders", "turn hestia back on", or invokes /hestia:lean [on|off].
+argument-hint: [on|off]
 allowed-tools: Read, Write, AskUserQuestion
 ---
 
-# Companion verbosity control
+# Companion on/off
 
-Hestia injects two calm reminders into every session automatically — talk to the user as a stakeholder, and keep the workspace tidy. This skill sets how assertively those reminders fire for the current project, or shows the current setting. The level is stored in `.hestia/lean-mode` and read by the session hook.
+Hestia injects two calm reminders into every session automatically — talk to the user as a stakeholder, and keep the workspace tidy. This skill turns those reminders on or off for the current project, or shows the current setting. The state is stored in `.hestia/lean-mode` and read by the session hook.
 
-## Levels
+- **on** (default) — the reminders are injected.
+- **off** — nothing is injected; the companion is silent for this project.
 
-- **trim** — light. Both reminders, but a single terse line each (no detail).
-- **lean** — default. Both reminders in full — the detail needed to apply them confidently.
-- **bare** — minimal. Only the communication reminder, terse; housekeeping is dropped.
-- **off** — no reminders injected.
-
-Each level changes what the SessionStart hook actually injects — `bare` < `trim` < `lean` in size — not just the tone.
+There are no verbosity levels — it is on or off.
 
 ## Steps
 
-1. **Read the requested level from `$ARGUMENTS`.**
-   - If it is one of `trim`, `lean`, `bare`, `off` → go to step 3.
+1. **Read `$ARGUMENTS`.**
+   - If it is `on` or `off` → go to step 3.
    - Otherwise → go to step 2.
 
-2. **No clear level given — ask.** First Read `.hestia/lean-mode` (if it is absent, the current level is `lean`). Then MUST invoke `AskUserQuestion`:
-   - header: `Companion verbosity`
+2. **No clear choice given — ask.** First Read `.hestia/lean-mode` (absent means `on`). Then MUST invoke `AskUserQuestion`:
+   - header: `Companion`
    - multiSelect: false
-   - options: `trim`, `lean`, `bare`, `off` — each with its one-line description from the list above, and mark which one is current.
+   - options: `on` and `off`, each with its one-line description above, and mark which one is current.
 
-3. **Save it.** MUST invoke `Write` to put the single lowercase word in `.hestia/lean-mode` (create the `.hestia/` folder if it does not exist). If the file already exists, Read it first.
+3. **Save it.** MUST invoke `Write` to put the single lowercase word (`on` or `off`) in `.hestia/lean-mode` (create the `.hestia/` folder if it does not exist). Writing `on` is equivalent to removing the file — either form means on.
 
-4. **Confirm in plain language.** Tell the user the new verbosity level, what it means in one sentence, and that it applies to this project from now on and takes effect for the rest of this session.
+4. **Confirm in plain language.** Tell the user whether the companion is now on or off, what that means in one sentence, and that it applies to this project. `off` takes effect immediately for the per-turn nudges and from the next session start for the full brief.
 
 ## Standing-order self-audit (optional)
 

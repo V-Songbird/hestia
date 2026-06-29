@@ -1,20 +1,16 @@
 #!/usr/bin/env python3
 """Hestia companion brief injection hook.
 
-Runs on SessionStart, SubagentStart, UserPromptSubmit, and PreToolUse. Reads the
-project's companion verbosity from `.hestia/lean-mode` (default: lean) and injects
-the companion doctrine as hidden context, tailored to each moment. Emits nothing
-when the mode is "off".
+Runs on SessionStart, SubagentStart, UserPromptSubmit, and PreToolUse. Reads
+`.hestia/lean-mode` (on unless the file says `off`) and injects the companion
+doctrine as hidden context, tailored to each moment. Emits nothing when off.
 
-  - SessionStart  -> the full brief at the active verbosity level:
-      trim -> the terse one-line form of every order
-      lean -> the full body of every order (default)
-      bare -> the terse form of the critical orders only
+  - SessionStart  -> the full brief (both reminder bodies).
     The SessionStart `source` selects the preamble framing, not the body:
       startup / clear  -> initial preamble (first load)
       resume / compact -> re-anchor preamble (counters post-compaction drift)
-    The order bodies are identical either way, so a re-brief after compaction
-    never loses doctrine detail. Unknown / absent source -> initial preamble.
+    The bodies are identical either way, so a re-brief after compaction never
+    loses detail. Unknown / absent source -> initial preamble.
   - SubagentStart -> the terse form of only the subagent=yes reminders
     (communication), regardless of level. A worker reports to the user too,
     but the housekeeping reminder is the parent session's job.
@@ -44,8 +40,6 @@ import re
 import sys
 from pathlib import Path
 
-VALID_LEVELS = {"trim", "lean", "bare"}
-DEFAULT_LEVEL = "lean"
 REANCHOR_SOURCES = {"resume", "compact"}
 DOCTRINE = Path(__file__).resolve().parent.parent / "skills" / "lean" / "doctrine.md"
 
@@ -71,15 +65,13 @@ def project_dir() -> Path:
     return Path(os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd())
 
 
-def read_mode() -> str:
+def is_off() -> bool:
+    """The companion is on unless `.hestia/lean-mode` says `off`."""
     f = project_dir() / ".hestia" / "lean-mode"
     try:
-        mode = f.read_text(encoding="utf-8").strip().lower()
+        return f.read_text(encoding="utf-8").strip().lower() == "off"
     except OSError:
-        return DEFAULT_LEVEL
-    if mode == "off":
-        return "off"
-    return mode if mode in VALID_LEVELS else DEFAULT_LEVEL
+        return False
 
 
 def _load_doctrine() -> str | None:
@@ -104,7 +96,7 @@ def parse_doctrine(text: str) -> dict:
 
     Returns {initial, reanchor, orders, turn, pretool}:
       - initial / reanchor: the two preambles (reanchor may be "").
-      - orders: [{id, critical, build, terse, full}] in file order.
+      - orders: [{id, subagent, terse, full}] in file order.
       - turn:   [(id, text)] — the per-turn rotation pool (NUDGES without tools=).
       - pretool:[(id, regex, text)] — situational PreToolUse lines (with tools=).
     """
@@ -136,7 +128,6 @@ def parse_doctrine(text: str) -> dict:
                 full_lines.append(line)
         orders.append({
             "id": attrs.get("id", ""),
-            "critical": attrs.get("critical") == "yes",
             "subagent": attrs.get("subagent") == "yes",
             "terse": terse,
             "full": "\n".join(full_lines).strip(),
@@ -173,9 +164,9 @@ def _assemble(preamble: str, pieces: list[str]) -> str:
     return f"{preamble}\n\n{body}".strip() if body else preamble
 
 
-def build_context(level: str, reanchor: bool = False) -> str:
-    """Session brief. `level` sets verbosity (trim/lean/bare); `reanchor` swaps the
-    preamble framing for resume/compact. Bodies are identical across both framings."""
+def build_context(reanchor: bool = False) -> str:
+    """The full session brief. `reanchor` swaps the preamble framing for
+    resume/compact; the reminder bodies are identical across both framings."""
     text = _load_doctrine()
     if text is None:
         return FALLBACK
@@ -184,12 +175,7 @@ def build_context(level: str, reanchor: bool = False) -> str:
     preamble = d["reanchor"] if (reanchor and d["reanchor"]) else d["initial"]
     if not orders:
         return preamble or FALLBACK
-    if level == "trim":
-        pieces = [o["terse"] for o in orders]
-    elif level == "bare":
-        pieces = [o["terse"] for o in orders if o["critical"]]
-    else:  # lean (default), and any unexpected value -> full
-        pieces = [o["full"] for o in orders]
+    pieces = [o["full"] for o in orders]
     return _assemble(preamble, pieces)
 
 
@@ -253,8 +239,7 @@ def _wrap(event: str, context: str) -> str:
 
 def main() -> None:
     event, source, tool_name = read_input()
-    mode = read_mode()
-    if mode == "off":
+    if is_off():
         sys.exit(0)
 
     if event == "SubagentStart":
@@ -268,7 +253,7 @@ def main() -> None:
         payload = build_turn_context()  # raw stdout
     else:
         # SessionStart (and any unexpected event) -> full brief as raw stdout.
-        payload = build_context(mode, reanchor=source in REANCHOR_SOURCES)
+        payload = build_context(reanchor=source in REANCHOR_SOURCES)
 
     try:
         # Force UTF-8 so em dashes etc. survive a non-UTF-8 console locale.

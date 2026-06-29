@@ -1,12 +1,11 @@
 """Tests for companion-inject.py — the SessionStart / SubagentStart injector.
 
 Covers:
-  - SessionStart at the default (lean) emits the full body of both reminders.
-  - The verbosity dial is real: trim = terse of both reminders, lean = full
-    bodies, bare = terse of the critical reminder only (bare < trim < lean).
+  - SessionStart (on by default) emits the full body of both reminders.
+  - The companion is on/off only — no verbosity levels. `off` emits nothing;
+    anything else (incl. absent file) is on.
   - SubagentStart emits the terse subagent=yes subset (communication only),
     wrapped in the hookSpecificOutput JSON contract — not housekeeping, not full.
-  - mode "off" emits nothing.
   - The hook never crashes on missing / empty / malformed stdin.
 """
 
@@ -24,7 +23,7 @@ PYTHON = sys.executable
 # Markers tied to the two-pillar doctrine (skills/lean/doctrine.md).
 COMMS_TERSE = "- **Talk to the stakeholder:**"
 HOUSE_TERSE = "- **Keep the workspace tidy:**"
-COMMS_FULL = "Lead with the outcome"          # appears only in the full body
+COMMS_FULL = "## Talk to the stakeholder, not the console"   # full-body heading only
 HOUSE_FULL = "## Keep the workspace tidy"      # full-body heading
 
 
@@ -93,11 +92,12 @@ class TestSessionStart:
         assert "Talk to the stakeholder" in r.stdout
         assert "Keep the workspace tidy" in r.stdout
 
-    def test_default_mode_is_lean(self, project):
-        """No lean-mode file -> default level = lean = full bodies of both reminders."""
+    def test_default_mode_is_on(self, project):
+        """No lean-mode file -> on -> full bodies of both reminders."""
         r = run_hook(project, session_event())
         # COMMS_FULL appears only in the full communication body, never terse.
         assert COMMS_FULL in r.stdout
+        assert COMMS_TERSE not in r.stdout
 
 
 # ---------------------------------------------------------------------------
@@ -270,44 +270,10 @@ class TestRobustness:
         r = run_hook(project, None)
         assert r.returncode == 0
 
-    def test_garbage_mode_falls_back_to_default(self, project):
-        set_mode(project, "wibble")
-        r = run_hook(project, session_event())
-        assert r.returncode == 0
-        assert COMMS_FULL in r.stdout  # fell back to lean (full bodies)
-
-
-# ---------------------------------------------------------------------------
-# The verbosity dial — trim / lean / bare genuinely differ
-# ---------------------------------------------------------------------------
-
-class TestLevels:
-    TERSE_LABELS = (COMMS_TERSE, HOUSE_TERSE)
-
-    def test_trim_is_all_orders_terse(self, project):
-        set_mode(project, "trim")
-        out = run_hook(project, session_event()).stdout
-        for label in self.TERSE_LABELS:
-            assert label in out          # both reminders present, terse
-        assert COMMS_FULL not in out     # but no full bodies
-        assert HOUSE_FULL not in out
-
-    def test_lean_is_all_orders_full(self, project):
-        set_mode(project, "lean")
-        out = run_hook(project, session_event()).stdout
-        assert COMMS_FULL in out         # full bodies
-        assert HOUSE_FULL in out
-        assert COMMS_TERSE not in out    # not the terse bullets
-
-    def test_bare_is_critical_orders_only(self, project):
-        set_mode(project, "bare")
-        out = run_hook(project, session_event()).stdout
-        assert COMMS_TERSE in out
-        # non-critical housekeeping is dropped at bare
-        assert HOUSE_TERSE not in out
-
-    def test_size_ordering_bare_lt_trim_lt_lean(self, project):
-        def size(mode):
+    def test_non_off_mode_is_on(self, project):
+        """Anything that isn't `off` — garbage or a legacy level word — means on."""
+        for mode in ("wibble", "lean", "trim", "bare"):
             set_mode(project, mode)
-            return len(run_hook(project, session_event()).stdout)
-        assert size("bare") < size("trim") < size("lean")
+            r = run_hook(project, session_event())
+            assert r.returncode == 0
+            assert COMMS_FULL in r.stdout  # full brief, not off
