@@ -1,10 +1,12 @@
 <div align="center">
   <img src="logo.svg" alt="Hestia" width="120" />
   <h1>Hestia</h1>
-  <p><strong>Claude Code's session companion</strong> — always-on guardrails, on-demand health checks, and truth-grounding before you touch unfamiliar technology.</p>
+  <p><strong>Claude Code's calm companion</strong> — keeps Claude talking to you as a stakeholder, and keeps your project tidy.</p>
 </div>
 
-Your `CLAUDE.md` starts clean. Then rules turn vague, instruction files reference paths that no longer exist, and Claude confidently writes code from outdated training knowledge. Hestia watches all of it — and keeps Claude honest before and while it builds.
+Claude is the expert who can build anything — but ask about his work and he can't stop talking: every step narrated, every decision explained, in language only another engineer would follow. Hestia rests a hand on his shoulder and reminds him of the room he's in: tell the person what changed and why it matters, not the play-by-play. And while he builds, Hestia keeps the workspace tidy — parking deferred work, saving decisions, catching instruction files that have gone stale.
+
+Hestia never tells Claude *how* to code. That's his craft. Hestia only watches how he *talks about it* and what he *leaves behind*.
 
 ---
 
@@ -22,40 +24,32 @@ Your `CLAUDE.md` starts clean. Then rules turn vague, instruction files referenc
 
 ## How it works
 
-Hestia runs on two tracks: **always-on** standing orders injected into every session, and **on-demand** skills you invoke when you need them.
+Hestia runs on two tracks: **always-on** reminders injected into every session, and **on-demand** skills you invoke when you need them.
 
 ### Always on
 
 > [!NOTE]
-> Standing orders are injected automatically into every session and every subagent. You never invoke them — they run.
+> Two reminders are injected automatically into every session. You never invoke them — they run. Tune how assertively they fire with `/hestia:lean trim\|lean\|bare\|off`.
 
-| Order | What it enforces |
+| Reminder | What it keeps in mind |
 | --- | --- |
-| **Lean** | Ship the smallest change that fully solves the problem. One line before fifty. Never cut validation, error handling, or security — cut the scaffolding around them. |
-| **Phase discipline** | Work spanning more than ~3 files or 30 minutes gets a phased breakdown proposed first, not started. |
-| **Truth-grounding** | On niche or unfamiliar tech, flag the knowledge gap, collect authoritative sources, and build from them. Training-based confidence is a trap on unfamiliar ground. |
-| **Scope control** | Out-of-scope discoveries get parked as `hestia:later <what> — revisit when <trigger>`, not chased inline. |
-| **Memory hygiene** | Decisions and their reasoning get saved to memory. Code, file contents, and implementation details do not. |
-| **Communication** | Lead with the answer, not the reasoning. Match technical depth to the vocabulary the user used. Skip hedging and jargon the user didn't introduce. |
-| **Formatting** | Use tables, bullets, and separators when structure genuinely reduces scanning effort. Don't impose structure on a flat answer. |
+| **Talk to the stakeholder** | The reader owns the outcome and may not be technical. Lead with what changed and why it matters, in their words. Skip the play-by-play, the hedging, and jargon they didn't use. Say the plan before big work, give depth when asked, and be honest about what you don't know. |
+| **Keep the workspace tidy** | Park out-of-scope finds as `hestia:later <what> — revisit when <trigger>` instead of chasing them. Save decisions and their reasoning to memory — never code or file contents. |
 
 ### On demand
 
 | You want to… | Invoke |
 | --- | --- |
 | Full health check of your Claude Code setup | `/hestia:checkup` |
-| Prep Claude for a niche or unfamiliar domain | `/hestia:prepare` |
 | Scan for stale setup files | `/hestia:freshness` |
-| Grade your rules and CLAUDE.md quality | `/hestia:assess-rules` |
+| See all deferred `hestia:later` work | `/hestia:debt` |
+| Tune how concise the companion keeps Claude | `/hestia:lean trim\|lean\|bare\|off` |
+| Check whether your rules and CLAUDE.md reach Claude | `/hestia:assess-rules` |
 | Write new rules with live quality scoring | `/hestia:author-rules` |
 | Fix rule formatting | `/hestia:format-rules` |
 | Install the curated starter rules file | `/hestia:primer` |
 | Author a skill, agent, command, or hook | `/hestia:scribe` |
 | Validate an instruction file is well-formed | `/hestia:proofread` |
-| Dial lean enforcement up or down | `/hestia:lean trim\|lean\|bare\|off` |
-| Review a diff for over-engineering | `/hestia:lean-review` |
-| Scan the whole codebase for bloat | `/hestia:lean-audit` |
-| See all deferred shortcuts | `/hestia:debt` |
 
 ---
 
@@ -69,25 +63,10 @@ Run this in any project. Hestia inventories your entire Claude Code setup — `C
 
 ---
 
-## Domain terrain prep
-
-Working with a JetBrains plugin SDK? A game server scripting engine? Any technology where Claude's training knowledge might be incomplete or years out of date?
-
-```
-/hestia:prepare
-```
-
-Hestia assesses its own knowledge gaps honestly, clones the source repository locally, reads the real API surface, and builds pointer-index skills that point directly to the source — not paraphrased summaries that lose detail in translation.
-
-> [!IMPORTANT]
-> Nothing gets built unless the gap is genuine. If no real knowledge gap is found, Hestia says so and stops.
-
----
-
 ## Read-only by default
 
 > [!NOTE]
-> Hestia's audits, watchers, and analysis tools **never modify your files**. Checkup, Freshness, Proofreader, and every `lean-*` skill only observe and report.
+> Hestia's audits, watchers, and analysis tools **never modify your files**. Checkup, Freshness, and Proofreader only observe and report.
 
 The three skills that do write — `author-rules`, `format-rules`, `scribe` — run only on direct invocation and always show you what they intend to create before touching anything.
 
@@ -106,7 +85,7 @@ The three skills that do write — `author-rules`, `format-rules`, `scribe` — 
 
 ## Status
 
-`1.1.0-beta` — feature-complete and dogfooded end-to-end across all pillars, including the interactive human-in-the-loop judgment flows. Beta means validated; stable `1.0.0` follows real-world mileage across diverse projects.
+`1.2.0-beta` — narrowed to two jobs: communication and housekeeping. Code craft is the model's own. Beta means validated; stable `1.0.0` follows real-world mileage across diverse projects.
 
 ---
 

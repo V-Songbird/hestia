@@ -1,7 +1,7 @@
 {
   "name": "hestia",
-  "version": "1.1.0-beta",
-  "description": "Always-on guardrails for Claude Code. Seven standing orders every session — lean, phase discipline, truth-grounding, scope control, memory hygiene, communication, formatting. On demand: audit setup, catch stale files, grade and write rules, prep for unfamiliar tech. Read-only — recommends, you act.",
+  "version": "1.2.0-beta",
+  "description": "A calm companion for Claude Code. Keeps Claude talking to you as a stakeholder — what changed and why it matters, not the play-by-play — and keeps your project tidy: parks deferred work, saves decisions to memory, and catches stale or unclear instruction files. Read-only by default — it recommends, you act.",
   "license": "MIT",
   "author": {
     "name": "Songbird",
@@ -10,13 +10,13 @@
   "homepage": "https://github.com/V-Songbird/hestia",
   "repository": "https://github.com/V-Songbird/hestia",
   "keywords": [
-    "setup",
-    "audit",
+    "communication",
+    "housekeeping",
+    "companion",
     "CLAUDE.md",
     "rules",
     "freshness",
-    "lean",
-    "guardrails",
+    "memory",
     "health"
   ]
 }

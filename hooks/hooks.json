@@ -30,7 +30,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "^(Edit|MultiEdit|NotebookEdit|Write|Bash|PowerShell|Agent|Workflow|EnterWorktree|WebSearch|WebFetch|TaskCreate|TodoWrite|EnterPlanMode|AskUserQuestion|Skill)$|^mcp__ccd_session__spawn_task$|^mcp__[A-Za-z0-9_]+__(replace_text_in_file|rename_refactoring|create_new_file|execute_sql_query|build_project|execute_run_configuration)$",
+        "matcher": "^(Bash|PowerShell|WebSearch|WebFetch|AskUserQuestion)$|^mcp__[A-Za-z0-9_]+__execute_sql_query$",
         "hooks": [
           {
             "type": "command",

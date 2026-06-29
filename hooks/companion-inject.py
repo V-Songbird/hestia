@@ -15,9 +15,9 @@ when the mode is "off".
       resume / compact -> re-anchor preamble (counters post-compaction drift)
     The order bodies are identical either way, so a re-brief after compaction
     never loses doctrine detail. Unknown / absent source -> initial preamble.
-  - SubagentStart -> the terse form of only the build-governing orders
-    (lean/YAGNI, truth-grounding, scope control), regardless of level. A
-    subagent does not orchestrate phases or own memory.
+  - SubagentStart -> the terse form of only the subagent=yes reminders
+    (communication), regardless of level. A worker reports to the user too,
+    but the housekeeping reminder is the parent session's job.
   - UserPromptSubmit -> ONE line picked at random from the turn-rotation pool.
     Rotating which order is spotlighted (and its wording) stops Claude
     pattern-matching a fixed string as boilerplate and tuning it out.
@@ -50,10 +50,12 @@ REANCHOR_SOURCES = {"resume", "compact"}
 DOCTRINE = Path(__file__).resolve().parent.parent / "skills" / "lean" / "doctrine.md"
 
 FALLBACK = (
-    "Lean mode: default to the smallest change that fully solves the problem. "
-    "Reuse what exists, then the standard library, then native features, before "
-    "writing new code. Never cut validation, error handling, security, or anything "
-    "asked for. Mark deliberate shortcuts with a `hestia:later` comment."
+    "Talk to the user as the stakeholder who owns the outcome: lead with what "
+    "changed and why it matters to them, in plain language and their own words. "
+    "Skip the play-by-play, the hedging, and jargon they didn't use; give depth "
+    "when they ask for it. Keep the workspace tidy — park out-of-scope work as a "
+    "`hestia:later <what> — revisit when <trigger>` note, and save decisions "
+    "(not code) to memory."
 )
 
 SUBAGENT_FALLBACK = FALLBACK
@@ -135,7 +137,7 @@ def parse_doctrine(text: str) -> dict:
         orders.append({
             "id": attrs.get("id", ""),
             "critical": attrs.get("critical") == "yes",
-            "build": attrs.get("build") == "yes",
+            "subagent": attrs.get("subagent") == "yes",
             "terse": terse,
             "full": "\n".join(full_lines).strip(),
         })
@@ -223,13 +225,13 @@ def build_pretool_context(tool_name: str | None) -> str:
 
 
 def build_subagent_context() -> str:
-    """Compact brief for subagents: the terse form of the build-governing orders
-    only, regardless of session level."""
+    """Compact brief for subagents: the terse form of the subagent=yes reminders
+    only, regardless of session level. A worker reports to the user too."""
     text = _load_doctrine()
     if text is None:
         return SUBAGENT_FALLBACK
     d = parse_doctrine(text)
-    pieces = [o["terse"] for o in d["orders"] if o["build"]]
+    pieces = [o["terse"] for o in d["orders"] if o["subagent"]]
     return _assemble(d["initial"], pieces) if pieces else SUBAGENT_FALLBACK
 
 

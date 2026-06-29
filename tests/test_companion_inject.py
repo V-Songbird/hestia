@@ -1,11 +1,11 @@
 """Tests for companion-inject.py — the SessionStart / SubagentStart injector.
 
 Covers:
-  - SessionStart at the default (lean) emits the full body of every order.
-  - The verbosity dial is real: trim = terse of every order, lean = full bodies,
-    bare = terse of the critical orders only (bare < trim < lean in size).
-  - SubagentStart emits the terse build-governing subset (Lean/Truth/Scope),
-    wrapped in the hookSpecificOutput JSON contract — not phases/memory, not full.
+  - SessionStart at the default (lean) emits the full body of both reminders.
+  - The verbosity dial is real: trim = terse of both reminders, lean = full
+    bodies, bare = terse of the critical reminder only (bare < trim < lean).
+  - SubagentStart emits the terse subagent=yes subset (communication only),
+    wrapped in the hookSpecificOutput JSON contract — not housekeeping, not full.
   - mode "off" emits nothing.
   - The hook never crashes on missing / empty / malformed stdin.
 """
@@ -20,6 +20,12 @@ import pytest
 
 HOOK = Path(__file__).parent.parent / "hooks" / "companion-inject.py"
 PYTHON = sys.executable
+
+# Markers tied to the two-pillar doctrine (skills/lean/doctrine.md).
+COMMS_TERSE = "- **Talk to the stakeholder:**"
+HOUSE_TERSE = "- **Keep the workspace tidy:**"
+COMMS_FULL = "Lead with the outcome"          # appears only in the full body
+HOUSE_FULL = "## Keep the workspace tidy"      # full-body heading
 
 
 def run_hook(project: Path, stdin_data: str | None) -> subprocess.CompletedProcess:
@@ -80,22 +86,18 @@ class TestSessionStart:
         # Raw text, not JSON-wrapped.
         with pytest.raises(json.JSONDecodeError):
             json.loads(r.stdout)
-        assert "Companion brief" in r.stdout
+        assert "# Hestia" in r.stdout
 
-    def test_full_brief_includes_every_standing_order(self, project):
+    def test_full_brief_includes_both_reminders(self, project):
         r = run_hook(project, session_event())
-        # All five core orders present at SessionStart.
-        assert "Lean" in r.stdout
-        assert "Phase discipline" in r.stdout
-        assert "truth-grounding" in r.stdout.lower()
-        assert "Scope control" in r.stdout
-        assert "Memory hygiene" in r.stdout
+        assert "Talk to the stakeholder" in r.stdout
+        assert "Keep the workspace tidy" in r.stdout
 
     def test_default_mode_is_lean(self, project):
-        """No lean-mode file -> default level = lean = full bodies of every order."""
+        """No lean-mode file -> default level = lean = full bodies of both reminders."""
         r = run_hook(project, session_event())
-        # "The ladder" appears only in the full Lean body, never in the terse form.
-        assert "The ladder" in r.stdout
+        # COMMS_FULL appears only in the full communication body, never terse.
+        assert COMMS_FULL in r.stdout
 
 
 # ---------------------------------------------------------------------------
@@ -105,12 +107,12 @@ class TestSessionStart:
 class TestSessionStartSource:
     def test_startup_uses_initial_preamble(self, project):
         out = run_hook(project, session_event("startup")).stdout
-        assert "loyal companion" in out          # initial preamble text
+        assert "calm companion" in out           # initial preamble text
         assert "just resumed or compressed" not in out
 
     def test_compact_uses_reanchor_preamble(self, project):
         out = run_hook(project, session_event("compact")).stdout
-        assert "re-anchor" in out                 # re-anchor heading
+        assert "still here" in out                # re-anchor heading
         assert "just resumed or compressed" in out
 
     def test_resume_uses_reanchor_preamble(self, project):
@@ -118,14 +120,14 @@ class TestSessionStartSource:
         assert "just resumed or compressed" in out
 
     def test_reanchor_keeps_full_order_bodies(self, project):
-        """Re-anchor changes the framing, never drops doctrine detail."""
+        """Re-anchor changes the framing, never drops detail."""
         out = run_hook(project, session_event("compact")).stdout
-        assert "The ladder" in out                # full Lean body still present
-        assert "## Memory hygiene" in out
+        assert COMMS_FULL in out                  # full communication body still present
+        assert HOUSE_FULL in out
 
     def test_unknown_source_falls_back_to_initial(self, project):
         out = run_hook(project, session_event("wibble")).stdout
-        assert "loyal companion" in out
+        assert "calm companion" in out
         assert "just resumed or compressed" not in out
 
 
@@ -159,27 +161,26 @@ class TestTurnNudge:
 # ---------------------------------------------------------------------------
 
 class TestPreToolUse:
-    def test_edit_gets_lean_nudge_json(self, project):
+    def test_edit_emits_nothing(self, project):
+        """Edit no longer carries a nudge — code craft is ceded."""
         r = run_hook(project, pretool_event("Edit"))
         assert r.returncode == 0
-        hso = json.loads(r.stdout)["hookSpecificOutput"]
-        assert hso["hookEventName"] == "PreToolUse"
-        assert hso["additionalContext"].startswith("[Hestia] Lean:")
+        assert r.stdout.strip() == ""
 
-    def test_bash_gets_scope_nudge(self, project):
+    def test_bash_gets_tidy_nudge(self, project):
         r = run_hook(project, pretool_event("Bash"))
         ctx = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
-        assert ctx.startswith("[Hestia] Scope:")
+        assert ctx.startswith("[Hestia] Tidy:")
 
-    def test_websearch_gets_truth_nudge(self, project):
+    def test_websearch_gets_honesty_nudge(self, project):
         r = run_hook(project, pretool_event("WebSearch"))
         ctx = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
-        assert "Truth-ground" in ctx
+        assert "Be honest" in ctx
 
     def test_mcp_sql_matches_regex_group(self, project):
         r = run_hook(project, pretool_event("mcp__webstorm__execute_sql_query"))
         ctx = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
-        assert ctx.startswith("[Hestia] Scope:")
+        assert ctx.startswith("[Hestia] Tidy:")
 
     def test_unmatched_tool_emits_nothing(self, project):
         r = run_hook(project, pretool_event("Read"))
@@ -188,7 +189,7 @@ class TestPreToolUse:
 
     def test_off_emits_nothing(self, project):
         set_mode(project, "off")
-        r = run_hook(project, pretool_event("Edit"))
+        r = run_hook(project, pretool_event("Bash"))
         assert r.stdout.strip() == ""
 
 
@@ -206,19 +207,16 @@ class TestSubagentStart:
         assert isinstance(hso["additionalContext"], str)
         assert hso["additionalContext"]
 
-    def test_includes_build_governing_orders(self, project):
+    def test_includes_communication_reminder(self, project):
         r = run_hook(project, subagent_event())
         ctx = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
-        assert "Lean" in ctx
-        assert "Scope" in ctx
-        assert "truth-grounding" in ctx.lower()
+        assert COMMS_TERSE in ctx
 
-    def test_excludes_orchestration_orders(self, project):
-        """Phase discipline and memory hygiene are NOT injected into subagents."""
+    def test_excludes_housekeeping(self, project):
+        """Housekeeping is the parent session's job, not a subagent's."""
         r = run_hook(project, subagent_event())
         ctx = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
-        assert "Phase discipline" not in ctx
-        assert "Memory hygiene" not in ctx
+        assert HOUSE_TERSE not in ctx
 
     def test_subagent_brief_is_smaller_than_full(self, project):
         full = run_hook(project, session_event()).stdout
@@ -228,11 +226,11 @@ class TestSubagentStart:
         assert len(sub) < len(full)
 
     def test_subagent_uses_terse_not_full(self, project):
-        """Subagent gets the terse one-liners, not the full bodies."""
+        """Subagent gets the terse one-liner, not the full body."""
         r = run_hook(project, subagent_event())
         ctx = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
-        assert "- **Lean:**" in ctx       # terse bullet form
-        assert "The ladder" not in ctx    # full Lean body NOT included
+        assert COMMS_TERSE in ctx       # terse bullet form
+        assert COMMS_FULL not in ctx    # full body NOT included
 
 
 # ---------------------------------------------------------------------------
@@ -262,7 +260,7 @@ class TestRobustness:
         r = run_hook(project, "")
         assert r.returncode == 0
         # Empty stdin -> treated as SessionStart -> raw full brief.
-        assert "Companion brief" in r.stdout
+        assert "# Hestia" in r.stdout
 
     def test_malformed_stdin_does_not_crash(self, project):
         r = run_hook(project, "not json at all {{{")
@@ -276,7 +274,7 @@ class TestRobustness:
         set_mode(project, "wibble")
         r = run_hook(project, session_event())
         assert r.returncode == 0
-        assert "The ladder" in r.stdout  # fell back to lean (full bodies)
+        assert COMMS_FULL in r.stdout  # fell back to lean (full bodies)
 
 
 # ---------------------------------------------------------------------------
@@ -284,33 +282,29 @@ class TestRobustness:
 # ---------------------------------------------------------------------------
 
 class TestLevels:
-    TERSE_LABELS = ("- **Lean:**", "- **Phases:**", "- **Truth-grounding:**",
-                    "- **Scope:**", "- **Memory:**")
+    TERSE_LABELS = (COMMS_TERSE, HOUSE_TERSE)
 
     def test_trim_is_all_orders_terse(self, project):
         set_mode(project, "trim")
         out = run_hook(project, session_event()).stdout
         for label in self.TERSE_LABELS:
-            assert label in out          # every order present, terse
-        assert "The ladder" not in out   # but no full bodies
-        assert "## Lean" not in out
+            assert label in out          # both reminders present, terse
+        assert COMMS_FULL not in out     # but no full bodies
+        assert HOUSE_FULL not in out
 
     def test_lean_is_all_orders_full(self, project):
         set_mode(project, "lean")
         out = run_hook(project, session_event()).stdout
-        assert "The ladder" in out       # full bodies
-        assert "## Memory hygiene" in out
-        assert "- **Lean:**" not in out  # not the terse bullets
+        assert COMMS_FULL in out         # full bodies
+        assert HOUSE_FULL in out
+        assert COMMS_TERSE not in out    # not the terse bullets
 
     def test_bare_is_critical_orders_only(self, project):
         set_mode(project, "bare")
         out = run_hook(project, session_event()).stdout
-        assert "- **Lean:**" in out
-        assert "- **Truth-grounding:**" in out
-        # non-critical orders are dropped at bare
-        assert "- **Phases:**" not in out
-        assert "- **Scope:**" not in out
-        assert "- **Memory:**" not in out
+        assert COMMS_TERSE in out
+        # non-critical housekeeping is dropped at bare
+        assert HOUSE_TERSE not in out
 
     def test_size_ordering_bare_lt_trim_lt_lean(self, project):
         def size(mode):

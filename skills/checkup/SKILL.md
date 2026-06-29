@@ -114,7 +114,6 @@ MUST invoke `AskUserQuestion` (header `Next step`, multiSelect false). Build opt
 - `fix: "scribe"` present → **Fix an instruction file** → continue with the `hestia:scribe` skill
 - `fix: "freshness"` present → **Fix stale references** → continue with the `hestia:freshness` skill
 - Skills, agents, or commands were found (summary counts > 0) → **Proofread my skills/agents** → tell the user they can run `/hestia:proofread` on specific files, or you can dispatch `hestia:proofreader` now — ask if they want that
-- Always → **Trim over-engineering** → continue with the `hestia:lean-audit` skill
 - Always → **Done for now**
 
 Then act on the choice: continue with the matching Hestia skill, or, if the user picked "Done", stop. If a named skill is not installed yet, tell the user the command to install it.

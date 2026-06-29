@@ -2,6 +2,21 @@
 
 All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
 
+## [1.2.0-beta] — 2026-06-29
+
+### Changed — refocused on communication and housekeeping; code craft ceded
+
+Hestia now does exactly two things: keep Claude talking to the user as a stakeholder, and keep the workspace tidy. It no longer tells Claude how to write code — that craft is the model's own. The seven standing orders collapse to two calm reminders, and the voice softened from barking imperatives to a hand on the shoulder.
+
+- **`skills/lean/doctrine.md`** — rewritten around two reminders: **Talk to the stakeholder** (lead with the outcome, the user's words, no play-by-play, give depth when asked, be honest about uncertainty, say the plan before big work, let structure earn its place) and **Keep the workspace tidy** (`hestia:later` parking, save decisions not code). The `lean` ladder/YAGNI/ceiling-comment doctrine, the `phases`, `formatting`, and code-process `truth-grounding` orders are gone; their durable kernels fold into the two reminders.
+- **`hooks/companion-inject.py`** — the `build=` axis (which orders reach subagents) is renamed `subagent=`; only communication reaches a worker now. Fallback text rewritten to the stakeholder voice.
+- **`hooks/hooks.json`** — `PreToolUse` matcher narrowed to the tools that still carry a nudge (Bash/PowerShell/WebSearch/WebFetch/AskUserQuestion/SQL); edit/write/dispatch/plan nudges removed with the code doctrine.
+- **Retired skills** — `lean-audit`, `lean-review` (code-leanness auditors) and `prepare` (code-terrain grounding) removed; all three taught code craft.
+- **`scripts/injection_ledger.py`** — canonical order ids reduced to `communication`, `housekeeping`.
+- **Identity** — `plugin.json` and `README.md` rewritten to describe a calm companion that protects the *user's* experience, not guardrails aimed at Claude. `checkup` no longer routes to the retired `lean-audit`.
+
+`/hestia:lean` still tunes how assertively the two reminders fire (`trim`/`lean`/`bare`/`off`); `bare` now keeps only the communication reminder. 602 tests pass (companion-hook suite rewritten to the two-pillar contract).
+
 ## [1.1.0-beta] — 2026-06-29
 
 ### Added — situational and rotating doctrine injection
