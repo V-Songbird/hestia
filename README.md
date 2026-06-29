@@ -83,7 +83,7 @@ The skills that do write — `author-rules` and `format-rules` — run only on d
 
 ## Status
 
-`1.2.0-beta` — narrowed to two jobs: communication and housekeeping. Code craft is the model's own. Beta means validated; stable `1.0.0` follows real-world mileage across diverse projects.
+`1.6.0-beta` — two jobs: communication and housekeeping (code craft is the model's own). Housekeeping now includes event-triggered freshness watchdogs that catch instruction-file references the moment a command breaks them. Beta means validated; stable `1.0.0` follows real-world mileage across diverse projects.
 
 ---
 
