@@ -2,6 +2,21 @@
 
 All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
 
+## [1.6.0-beta] — 2026-06-29
+
+### Added — vanished-path citation alarm (PostToolUse)
+
+The freshness skill forward-scans instruction files for dead references, but only at session start — so a path a command renames or deletes mid-session goes unnoticed until the next launch, long after the cheap moment to fix it. A new `PostToolUse` hook closes that gap from the other direction: when a `Bash`/`PowerShell` command moves or deletes a path that no longer exists on disk, it pivots on that vanished path and reverse-looks-up every `CLAUDE.md` / rule / agent / skill / command reference that named it — exact match for a file, prefix match for a directory (one `git mv scripts/ tools/` flags every `scripts/*` citation at once) — and injects an advisory **in the same turn**, citing each `file:line`.
+
+- **`hooks/vanished-path-alarm.py`** — new hook. Reuses `scripts/discover.py` (inventory) and `scripts/refs.py` (`extract_refs`). It deliberately does *not* use `refs.resolve()`: that helper chooses between a root-relative and a file-relative reading of a bare path by which one currently exists, but the matched path has just been deleted, so it resolves both interpretations itself (`_candidate_targets`) — without which a bare ref cited from a nested `.claude/rules/` file is mis-resolved and missed.
+- **`hooks/hooks.json`** — new `PostToolUse` matcher `^(Bash|PowerShell)$`.
+- **Existence guard, not exit-code parsing** — a path argument is treated as "vanished" only if it no longer exists on disk, which cleanly separates a move's gone source from its surviving destination and silences failed/no-op commands without inspecting the command's result.
+- **Signature throttle** (`.hestia/vanished-alarm.json`) — suppresses an identical back-to-back alarm; unlike the freshness nudge it has no time component, since each destructive command is a discrete event.
+- **Conservative by design** — globbed deletes (`rm *.py`), `$VAR` paths, and out-of-tree paths are skipped (a miss preferred to a false alarm); it sees through `sudo` / `env` / `VAR=val` prefixes and flags after the verb (`git rm -f`), but deliberately bails on `git -C` / `--work-tree` (which relocate the base a path resolves against); PowerShell `\` separators are normalized so the reverse lookup resolves identically on every OS.
+- Never blocks the tool; any error exits 0 silently.
+
+604 tests pass (24 new).
+
 ## [1.5.0-beta] — 2026-06-29
 
 ### Added — boundary re-injection (PostToolUse)
