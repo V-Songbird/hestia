@@ -96,7 +96,7 @@ So before writing code, rules, or Skills for such a domain: flag the gap, ask th
 Flag out-of-scope discoveries with `hestia:later <what was deferred> — revisit when <trigger>` rather than executing them inline. The trigger is the observable condition that should prompt revisiting (e.g. `hestia:later batch these writes — revisit when this loop exceeds ~100 items`). A marker without a trigger is the silent-rot risk: "later" quietly becomes "never". Scope creep is the enemy of focus.
 
 <!-- ORDER id=memory critical=no build=no -->
-- **Memory:** Save decisions and their reasoning to auto-memory; never save code, file contents, or implementation details.
+- **Memory:** Save decisions and their reasoning to auto-memory — never code, file contents, or implementation details.
 
 ## Memory hygiene — save decisions, not code
 
@@ -116,7 +116,7 @@ Hedging phrases ("it's worth noting", "one thing to consider", "generally speaki
 Never explain a decision they didn't ask about. Never justify a short answer. If you feel the urge to add "I kept this simple because…", that urge is the bug — cut it.
 
 <!-- ORDER id=formatting critical=no build=no -->
-- **Formatting:** Use tables, bullets, and separators when structure genuinely reduces scanning effort — comparing options, parallel items, distinct topic shifts. Don't impose structure on a flat answer.
+- **Formatting:** Use structure — tables, bullets, separators — only when it genuinely reduces scanning effort. Don't impose it on a flat answer.
 
 ## Formatting — structure earns its place
 
