@@ -37,12 +37,23 @@ def run_hook(project: Path, stdin_data: str | None) -> subprocess.CompletedProce
     )
 
 
-def session_event() -> str:
-    return json.dumps({"hook_event_name": "SessionStart"})
+def session_event(source: str | None = None) -> str:
+    d = {"hook_event_name": "SessionStart"}
+    if source is not None:
+        d["source"] = source
+    return json.dumps(d)
 
 
 def subagent_event() -> str:
     return json.dumps({"hook_event_name": "SubagentStart"})
+
+
+def turn_event() -> str:
+    return json.dumps({"hook_event_name": "UserPromptSubmit", "prompt": "do a thing"})
+
+
+def pretool_event(tool_name: str) -> str:
+    return json.dumps({"hook_event_name": "PreToolUse", "tool_name": tool_name})
 
 
 @pytest.fixture
@@ -85,6 +96,100 @@ class TestSessionStart:
         r = run_hook(project, session_event())
         # "The ladder" appears only in the full Lean body, never in the terse form.
         assert "The ladder" in r.stdout
+
+
+# ---------------------------------------------------------------------------
+# SessionStart source — re-anchor preamble on resume/compact
+# ---------------------------------------------------------------------------
+
+class TestSessionStartSource:
+    def test_startup_uses_initial_preamble(self, project):
+        out = run_hook(project, session_event("startup")).stdout
+        assert "loyal companion" in out          # initial preamble text
+        assert "just resumed or compressed" not in out
+
+    def test_compact_uses_reanchor_preamble(self, project):
+        out = run_hook(project, session_event("compact")).stdout
+        assert "re-anchor" in out                 # re-anchor heading
+        assert "just resumed or compressed" in out
+
+    def test_resume_uses_reanchor_preamble(self, project):
+        out = run_hook(project, session_event("resume")).stdout
+        assert "just resumed or compressed" in out
+
+    def test_reanchor_keeps_full_order_bodies(self, project):
+        """Re-anchor changes the framing, never drops doctrine detail."""
+        out = run_hook(project, session_event("compact")).stdout
+        assert "The ladder" in out                # full Lean body still present
+        assert "## Memory hygiene" in out
+
+    def test_unknown_source_falls_back_to_initial(self, project):
+        out = run_hook(project, session_event("wibble")).stdout
+        assert "loyal companion" in out
+        assert "just resumed or compressed" not in out
+
+
+# ---------------------------------------------------------------------------
+# UserPromptSubmit — one rotating line, raw stdout
+# ---------------------------------------------------------------------------
+
+class TestTurnNudge:
+    def test_emits_single_hestia_line(self, project):
+        r = run_hook(project, turn_event())
+        assert r.returncode == 0
+        out = r.stdout.strip()
+        assert out.startswith("[Hestia]")
+        assert out.count("[Hestia]") == 1        # one line, not the old 4-in-one
+        with pytest.raises(json.JSONDecodeError):
+            json.loads(r.stdout)                  # raw, not JSON-wrapped
+
+    def test_rotation_covers_multiple_orders(self, project):
+        """Across many turns the pool yields more than one distinct line."""
+        seen = {run_hook(project, turn_event()).stdout.strip() for _ in range(40)}
+        assert len(seen) > 1
+
+    def test_off_emits_nothing(self, project):
+        set_mode(project, "off")
+        r = run_hook(project, turn_event())
+        assert r.stdout.strip() == ""
+
+
+# ---------------------------------------------------------------------------
+# PreToolUse — situational, JSON-wrapped, silent for unmatched tools
+# ---------------------------------------------------------------------------
+
+class TestPreToolUse:
+    def test_edit_gets_lean_nudge_json(self, project):
+        r = run_hook(project, pretool_event("Edit"))
+        assert r.returncode == 0
+        hso = json.loads(r.stdout)["hookSpecificOutput"]
+        assert hso["hookEventName"] == "PreToolUse"
+        assert hso["additionalContext"].startswith("[Hestia] Lean:")
+
+    def test_bash_gets_scope_nudge(self, project):
+        r = run_hook(project, pretool_event("Bash"))
+        ctx = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
+        assert ctx.startswith("[Hestia] Scope:")
+
+    def test_websearch_gets_truth_nudge(self, project):
+        r = run_hook(project, pretool_event("WebSearch"))
+        ctx = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
+        assert "Truth-ground" in ctx
+
+    def test_mcp_sql_matches_regex_group(self, project):
+        r = run_hook(project, pretool_event("mcp__webstorm__execute_sql_query"))
+        ctx = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
+        assert ctx.startswith("[Hestia] Scope:")
+
+    def test_unmatched_tool_emits_nothing(self, project):
+        r = run_hook(project, pretool_event("Read"))
+        assert r.returncode == 0
+        assert r.stdout.strip() == ""
+
+    def test_off_emits_nothing(self, project):
+        set_mode(project, "off")
+        r = run_hook(project, pretool_event("Edit"))
+        assert r.stdout.strip() == ""
 
 
 # ---------------------------------------------------------------------------
