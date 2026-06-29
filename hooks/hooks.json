@@ -2,6 +2,7 @@
   "hooks": {
     "SessionStart": [
       {
+        "matcher": "startup|resume|clear|compact",
         "hooks": [
           {
             "type": "command",
@@ -18,6 +19,18 @@
     ],
     "UserPromptSubmit": [
       {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/companion-inject.py\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "^(Edit|MultiEdit|NotebookEdit|Write|Bash|PowerShell|Agent|Workflow|EnterWorktree|WebSearch|WebFetch|TaskCreate|TodoWrite|EnterPlanMode|AskUserQuestion|Skill)$|^mcp__ccd_session__spawn_task$|^mcp__[A-Za-z0-9_]+__(replace_text_in_file|rename_refactoring|create_new_file|execute_sql_query|build_project|execute_run_configuration)$",
         "hooks": [
           {
             "type": "command",
