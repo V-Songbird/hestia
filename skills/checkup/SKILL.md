@@ -111,9 +111,7 @@ If there are zero findings, say so plainly and congratulate the user — then ST
 MUST invoke `AskUserQuestion` (header `Next step`, multiSelect false). Build options only from the `fix` values that actually appear in the merged findings, plus the two always-present options:
 
 - `fix: "assess-rules"` present → **Improve my rules** → continue with the `hestia:assess-rules` skill
-- `fix: "scribe"` present → **Fix an instruction file** → continue with the `hestia:scribe` skill
 - `fix: "freshness"` present → **Fix stale references** → continue with the `hestia:freshness` skill
-- Skills, agents, or commands were found (summary counts > 0) → **Proofread my skills/agents** → tell the user they can run `/hestia:proofread` on specific files, or you can dispatch `hestia:proofreader` now — ask if they want that
 - Always → **Done for now**
 
 Then act on the choice: continue with the matching Hestia skill, or, if the user picked "Done", stop. If a named skill is not installed yet, tell the user the command to install it.
@@ -130,4 +128,3 @@ Tell the user, in a friendly line or two, that this project has little or no Cla
 - This is the front door. Skills it routes to do the deep work.
 - Everything here is read-only except the onboarding starter file, which is always confirmed first.
 - The rules engine (`--finalize`) requires a judgment step that is only available inside `hestia:assess-rules`. If `--finalize` errors at the checkup stage, skip it silently — the assess-rules skill runs the full pipeline including judgment.
-- Proofreader is never auto-dispatched from checkup. It is offered as a next-step option when instruction artifacts exist.

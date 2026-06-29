@@ -2,6 +2,20 @@
 
 All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
 
+## [1.3.0-beta] — 2026-06-29
+
+### Changed — scribe/proofreader retired; rules engine refaced around the user
+
+Continues the 1.2.0 refocus. The instruction-artifact authoring + QA tooling is ceded as craft, and the rules engine now speaks from the user's side.
+
+- **Retired** `scribe`, `proofreader`, and `run-tests` — authoring and linting Claude Code artifacts (frontmatter, tool-shapes, token budgets) is mechanics-correctness craft, the artifact-equivalent of code. Their one keeper — *name the consequence, not the mechanism* — folds into the communication reminder in `doctrine.md`.
+- **Rules-engine lens reframed** — `assess-rules` now measures "whether your instruction reaches Claude intact" rather than "structural clarity for Claude" (`quality-model.md`). Same scoring, the user's-intent frame.
+- **Reports calmed (dogfood)** — `assess-rules` leads with the plain consequence, not the grade, and surfaces "rules that can't be checked or self-verified" instead of the internal "folklore" label; `author-rules` drops the bare decimal; the fix-menu loses the "primitive" jargon.
+- **checkup** — still flags malformed/oversized/unparseable instruction files (a broken file is housekeeping), but no longer routes the fix to the retired scribe; the scribe/proofread next-step options are gone.
+- Governing principle: Hestia keeps what judges whether *meaning lands*; it cedes what judges whether *mechanics are correct*.
+
+602 tests pass.
+
 ## [1.2.0-beta] — 2026-06-29
 
 ### Changed — refocused on communication and housekeeping; code craft ceded

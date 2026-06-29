@@ -2,7 +2,7 @@
 
 Deterministic, cheap, and read-only. Runs the discover inventory, applies a set
 of fast heuristics, and emits ranked findings as JSON. Deeper, model-judged
-checks (rule-quality scoring, artifact proofreading) are layered on top by the
+checks (rule-quality scoring) are layered on top by the
 checkup skill once those engines exist — this script is the always-available
 floor.
 
@@ -122,7 +122,7 @@ def audit(project_root: str | None = None) -> dict:
                 symptom="Agent has no frontmatter",
                 why="Without YAML frontmatter (name + description), Claude can't reliably discover or dispatch this agent.",
                 fix_action="Add a YAML frontmatter block with at least `name` and `description`.",
-                file=a["path"], fix="scribe", tags=["frontmatter"]))
+                file=a["path"], tags=["frontmatter"]))
         elif not fm.get("name") or not fm.get("description"):
             missing = " and ".join(k for k in ("name", "description") if not fm.get(k))
             findings.append(Finding.cited(
@@ -130,7 +130,7 @@ def audit(project_root: str | None = None) -> dict:
                 symptom=f"Agent frontmatter missing {missing}",
                 why="The description is what makes Claude pick the agent at the right moment.",
                 fix_action=f"Add the missing frontmatter field(s): {missing}.",
-                file=a["path"], fix="scribe", tags=["frontmatter"]))
+                file=a["path"], tags=["frontmatter"]))
 
     # 5. Oversized SKILL.md bodies.
     for s in art["skills"]:
@@ -140,7 +140,7 @@ def audit(project_root: str | None = None) -> dict:
                 symptom=f"SKILL.md is long ({s['lines']} lines)",
                 why="A bloated SKILL.md body stops being a clean orchestrator and buries the steps Claude needs.",
                 fix_action=f"Trim under {SKILL_SOFT_MAX} lines; move payloads and references into sibling files.",
-                file=s["path"], fix="scribe", tags=["size"]))
+                file=s["path"], tags=["size"]))
 
     # 6. Unparseable settings / mcp config.
     for bad in inv["hooks"].get("parse_errors", []):
@@ -149,14 +149,14 @@ def audit(project_root: str | None = None) -> dict:
             symptom="settings file is not valid JSON",
             why="Hooks and permissions in this file are being ignored entirely until the JSON parses.",
             fix_action="Fix the JSON syntax error so the settings file loads.",
-            file=bad, fix="scribe", tags=["parse"]))
+            file=bad, tags=["parse"]))
     if inv["mcp"].get("parse_error"):
         findings.append(Finding.cited(
             severity="medium", artifact="mcp",
             symptom=".mcp.json is not valid JSON",
             why="MCP servers declared here are being ignored until the JSON parses.",
             fix_action="Fix the JSON syntax error in .mcp.json.",
-            file=inv["mcp"].get("path", ".mcp.json"), fix="scribe", tags=["parse"]))
+            file=inv["mcp"].get("path", ".mcp.json"), tags=["parse"]))
 
     # --- Part C: honest limits — what this heuristic floor could NOT check ---
     limits.append(limit_note(

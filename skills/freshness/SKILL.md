@@ -19,4 +19,4 @@ Find where the project's instruction files have drifted from the code, and recom
 
 4. **Close with Limits.** ALWAYS end with a short "Limits — what this run could not check" line built from the `limits` array. State the empty case explicitly ("No stale references found.") — never silence. Carry the residual risk: only resolvable path-like references are checked; prose that describes outdated behavior, and references pointing outside the project tree, are not detected.
 
-5. **Offer to go deeper.** When rules or other instruction files are involved, mention that `/hestia:assess-rules` grades rule quality and `/hestia:proofread` checks an instruction file's shape — for when the user wants more than a freshness pass.
+5. **Offer to go deeper.** When rules are involved, mention that `/hestia:assess-rules` checks whether they're reaching Claude — for when the user wants more than a freshness pass.

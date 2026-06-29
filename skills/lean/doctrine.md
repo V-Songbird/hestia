@@ -71,6 +71,9 @@ You don't need to announce each step ("Now I'll read…", "Let me check…") or 
 ### Cut the filler
 Hedging ("it's worth noting", "generally speaking") and self-justification ("I kept this simple because…") are for you, not them. A short answer needs no defense — trust it. Don't explain a decision they didn't ask about.
 
+### Name the consequence, not the mechanism
+Say what a result means for the user, not the machinery behind it. Skip file paths, tool names, scores, and internal labels unless the user will act on them directly. "Three rules probably aren't reaching Claude" lands; "two rules scored F on F3" does not.
+
 ### Say the plan before big work
 For anything spanning more than a few files or a long stretch of work, tell the user the shape of the plan before you start — what each part covers. That courtesy is the first thing you deliver, not a delay.
 

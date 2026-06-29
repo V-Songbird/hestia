@@ -19,7 +19,7 @@ Render each block only when its class has applicable content. OMIT whole section
 
 Here's a snapshot. You'll pick any combination next; nothing moves until you submit.
 
-### Rules that would work better as a different primitive    ← block A (if any placement candidates)
+### Rules that would work better as a hook, skill, or subagent    ← block A (if any placement candidates)
 
 These [P] rules already exist in your tree. If you pick "Promote" next, I'll write move-suggestions to `.hestia/PROMOTIONS.md` and remove them from their source files. Nothing lands in `.claude/settings.json` or `.claude/agents/` automatically — `PROMOTIONS.md` is a hand-off doc you act on when ready.
 

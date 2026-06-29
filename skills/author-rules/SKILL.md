@@ -260,8 +260,7 @@ After all rules pass the quality floor (or are accepted by the user):
 ## Created
 
 .claude/rules/<topic>.md — [N] rules, scoped to [pattern]
-  Mean quality: A (0.84)
-  All rules meet the quality bar
+  All rules are clear enough to reach Claude reliably (grade A)
 
 The project now has [N] total rules across [M] files.
 ```

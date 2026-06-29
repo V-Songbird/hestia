@@ -43,7 +43,6 @@ Detectors that ALREADY have negative coverage (not duplicated here):
   enforceability.py folklore class .... tests/test_enforceability.py
   freshness_state negative invariants .. tests/test_freshness_state.py
   finding-contract cite/triple-shape ... tests/test_finding_contract.py
-  proofreader 13-item checklist ........ tests/proofreader-fixtures/{pass,fail}
 """
 
 import json

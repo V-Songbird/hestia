@@ -4,14 +4,14 @@ Formal specification of the per-rule, per-file, and per-corpus quality scores. T
 
 ## What the score measures (the lens)
 
-Rules in CLAUDE.md and `.claude/rules/` are instructions FOR Claude to follow, not documentation for humans. This score measures **structural clarity for Claude**:
+Rules in CLAUDE.md and `.claude/rules/` are how you tell Claude your intent. This score measures **whether your instruction reaches Claude intact** — not whether it reads well to a human, but whether the meaning you wrote will land when Claude needs it:
 
-- **F1 Verb strength** — How binding is this? Does Claude know whether to treat it as mandatory or optional?
-- **F2 Framing polarity** — Can Claude bind trigger and action to the same noun? Positive imperatives are sturdier than prohibitions.
-- **F3 Trigger-action distance** — Will Claude recognize the firing moment? The closer the trigger to the action, the more reliable.
-- **F4 Load-trigger alignment** — Will the rule be in Claude's context window when it fires? Scoped rules only load when their glob matches.
-- **F7 Concreteness** — Does Claude have specifics to match against? Abstract principles give Claude nothing to act on.
-- **F8 Enforceability ceiling** — Could a hook do this more reliably than text? Reported as a parallel signal; see §4 Layer Overlay.
+- **F1 Verb strength** — Did you say how binding this is? Claude can't tell mandatory from optional unless your wording does.
+- **F2 Framing polarity** — Does your phrasing tie the trigger and the action together? A positive imperative lands more reliably than a prohibition.
+- **F3 Trigger-action distance** — Did you make the firing moment obvious? The closer you put the trigger to the action, the more reliably it fires.
+- **F4 Load-trigger alignment** — Will your rule be loaded when it's needed? A scoped rule only loads when its glob matches.
+- **F7 Concreteness** — Did you give Claude specifics to act on? An abstract principle leaves nothing to match against.
+- **F8 Enforceability ceiling** — Would a hook carry this more reliably than words? Reported as a parallel signal; see §4 Layer Overlay.
 
 ## What the score does NOT measure
 
