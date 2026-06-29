@@ -76,9 +76,11 @@ def parse_doctrine(text: str) -> tuple[str, list[dict]]:
     text = _strip_authoring_comment(text)
     parts = re.split(r"<!--\s*ORDER\s+(.*?)\s*-->", text, flags=re.DOTALL)
     preamble = parts[0].strip()
+    _attr_re = re.compile(r'(\w+)=(?:"([^"]*)"|([\w-]+))')
     orders: list[dict] = []
     for i in range(1, len(parts) - 1, 2):
-        attrs = dict(kv.split("=", 1) for kv in parts[i].split() if "=" in kv)
+        attrs = {m.group(1): (m.group(2) if m.group(2) is not None else m.group(3))
+                 for m in _attr_re.finditer(parts[i])}
         terse, full_lines = "", []
         for line in parts[i + 1].strip().splitlines():
             s = line.strip()
@@ -90,6 +92,8 @@ def parse_doctrine(text: str) -> tuple[str, list[dict]]:
             "id": attrs.get("id", ""),
             "critical": attrs.get("critical") == "yes",
             "build": attrs.get("build") == "yes",
+            "turn": attrs.get("turn") == "yes",
+            "micro": attrs.get("micro", ""),
             "terse": terse,
             "full": "\n".join(full_lines).strip(),
         })
@@ -118,6 +122,19 @@ def build_context(level: str) -> str:
     else:  # lean (default), and any unexpected value -> full
         pieces = [o["full"] for o in orders]
     return _assemble(preamble, pieces)
+
+
+def build_turn_context() -> str:
+    """Per-turn micro-nudge for UserPromptSubmit: one line from all turn=yes orders."""
+    try:
+        text = DOCTRINE.read_text(encoding="utf-8")
+    except OSError:
+        return FALLBACK
+    _, orders = parse_doctrine(text)
+    micros = [o["micro"] for o in orders if o.get("turn") and o.get("micro")]
+    if not micros:
+        return FALLBACK
+    return "[Hestia] " + " · ".join(micros)
 
 
 def build_subagent_context() -> str:
@@ -155,6 +172,9 @@ def main() -> None:
                 "additionalContext": build_subagent_context(),
             }
         })
+    elif event == "UserPromptSubmit":
+        # Per-turn micro-nudge: one line, re-anchors the most actionable orders.
+        payload = build_turn_context()
     else:
         # SessionStart gets the full brief as raw stdout.
         payload = build_context(mode)
