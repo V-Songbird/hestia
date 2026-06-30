@@ -1,0 +1,69 @@
+{
+  "_comment": "Routing table for Hestia's detect-and-route orchestration. Hestia DETECTS config drift but does not repair it — repair belongs to the plugin that owns the artifact. Claude Code exposes no programmatic cross-plugin invocation API (verified against plugins-reference), so a 'handoff' is: name the owning tool, stage a payload, and let the user (or Claude's description-matching delegation) trigger it. Each route maps one drift class to its owner. Keep this in sync with the verified plugin capability maps; do not invent owners.",
+  "routes": [
+    {
+      "drift_class": "claude_md_content_drift",
+      "detects": "CLAUDE.md names a command, path, or architecture that no longer matches the codebase (stale command, dead reference, outdated structure).",
+      "owner_plugin": "claude-md-management",
+      "target": "claude-md-improver skill",
+      "install_hint": "/plugin install claude-md-management",
+      "payload_fields": ["file", "items", "correct_values"],
+      "action": "Stale content in CLAUDE.md. The tool that rewrites it against the code is claude-md-improver — invoke it and point it at the stale items below."
+    },
+    {
+      "drift_class": "skill_internal_ref_broken",
+      "detects": "A SKILL.md body references a scripts/, references/, or assets/ file that no longer resolves.",
+      "owner_plugin": "skill-creator",
+      "target": "skill-creator skill (improve loop)",
+      "install_hint": "/plugin install skill-creator",
+      "payload_fields": ["file", "items"],
+      "action": "A skill points at files that no longer exist. skill-creator owns skill repair — hand it the skill dir and the dangling references."
+    },
+    {
+      "drift_class": "skill_description_drift",
+      "detects": "A skill's description frontmatter no longer matches what its body does (body added/removed capabilities the description doesn't mention).",
+      "owner_plugin": "skill-creator",
+      "target": "skill-creator skill (description optimization)",
+      "install_hint": "/plugin install skill-creator",
+      "payload_fields": ["file", "items"],
+      "action": "A skill's description has drifted from its body. skill-creator's description-optimization path re-aligns it for correct triggering."
+    },
+    {
+      "drift_class": "structural_invalidity",
+      "detects": "A .claude/ component is malformed — invalid frontmatter, bad manifest, broken schema — independent of whether its content is current.",
+      "owner_plugin": "plugin-dev",
+      "target": "plugin-validator agent",
+      "install_hint": "/plugin install plugin-dev",
+      "payload_fields": ["file"],
+      "action": "A config file is structurally malformed (well-formedness, not staleness). plugin-validator checks the whole tree — point it at the plugin or .claude root."
+    },
+    {
+      "drift_class": "weak_skill_description",
+      "detects": "A skill's description/trigger is weak or undertriggering (a quality concern, surfaced read-only).",
+      "owner_plugin": "plugin-dev",
+      "target": "skill-reviewer agent",
+      "install_hint": "/plugin install plugin-dev",
+      "payload_fields": ["file"],
+      "action": "A skill's trigger may be too weak to fire reliably. skill-reviewer gives a read-only quality review — hand it the SKILL.md path."
+    },
+    {
+      "drift_class": "rule_should_be_hook",
+      "detects": "A rule states a mechanically checkable prohibition that prose can't enforce (a deterministic predicate on a tool call), so it belongs in a hook, not a rule.",
+      "owner_plugin": "hookify",
+      "target": "/hookify",
+      "install_hint": "/plugin install hookify",
+      "payload_fields": ["items", "candidate_event", "pattern"],
+      "action": "This rule is really a deterministic predicate — hookify can codify it as a hot-reloadable enforcement rule. NOTE: hookify writes gitignored *.local.md, so it does NOT propagate to a team.",
+      "caveat": "team-local only (gitignored *.local.md)"
+    },
+    {
+      "drift_class": "absence_gap",
+      "detects": "The codebase signals an automation that does not yet exist (formatter present but no PostToolUse hook; integration dep but no MCP; etc.). This is what is MISSING, not what is stale.",
+      "owner_plugin": "claude-code-setup",
+      "target": "claude-automation-recommender skill",
+      "install_hint": "/plugin install claude-code-setup",
+      "payload_fields": ["items"],
+      "action": "The project would benefit from an automation it doesn't have. claude-automation-recommender proposes what's missing — Hestia maintains what exists; this is the seam."
+    }
+  ]
+}
