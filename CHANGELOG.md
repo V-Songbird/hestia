@@ -2,6 +2,24 @@
 
 All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
 
+## [2.1.0-beta] — 2026-06-30
+
+### Added — prose-drift skill
+
+New `/hestia:prose-drift` skill detects semantically stale instructions — rules and CLAUDE.md directions that assert facts about the project's tools, commands, structure, or external services that the actual code no longer confirms. Complements `/hestia:freshness` (broken path references) with reasoning-based staleness detection Claude performs directly.
+
+- **`skills/prose-drift/SKILL.md`** — Claude-driven scan: discovers instruction files via `discover.py`, extracts up to 25 testable claims (tech_stack / command / dependency / structure / convention / external_service), probes each with Grep/Glob/Read, reports in three buckets: Contradicted (both rule and code location cited), Advisory (not found), Confirmed.
+- **`skills/freshness/SKILL.md`** — Limits section now routes to `/hestia:prose-drift` for semantic staleness.
+- **`skills/checkup/SKILL.md`** — Step 6 always offers "Scan for stale prose" → `/hestia:prose-drift`.
+- **`scripts/drift.py`** — Both `residual_risk` strings mention `/hestia:prose-drift`.
+
+### Changed — identity copy ("keeper" not "watchdog")
+
+`README.md` and `plugin.json` copy updated: "watchdog" replaced with "keeper" in the tagline; body copy uses "tends" instead of "watches". The hearth-goddess identity doesn't need guard-dog vocabulary.
+
+- **`README.md`** — tagline, body, and Status section updated; `/hestia:prose-drift` added to the on-demand skills table.
+- **`plugin.json`** — description updated to drop "watchdog" framing.
+
 ## [2.0.0-beta] — 2026-06-30
 
 ### Removed — communication pillar

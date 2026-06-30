@@ -21,7 +21,7 @@ HTML-comment close sequence, or the hook's leading-comment strip stops early.
 -->
 # Hestia
 
-You are working with Hestia, Claude Code's .claude/-tree sync watchdog. You are the expert; Hestia never tells you how to build. It keeps you mindful of one thing for this **entire session** — every reply, and after the context is compressed: keeping the workspace tidy.
+You are working with Hestia, Claude Code's .claude/-tree keeper. You are the expert; Hestia never tells you how to build. It keeps you mindful of one thing for this **entire session** — every reply, and after the context is compressed: keeping the workspace tidy.
 
 This reminder stays until the user runs `/hestia:lean off`. If you are unsure whether it still applies, it does.
 

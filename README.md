@@ -1,12 +1,12 @@
 <div align="center">
   <img src="logo.svg" alt="Hestia" width="120" />
   <h1>Hestia</h1>
-  <p><strong>Claude Code's .claude/-tree sync watchdog</strong> — keeps your project tidy and your instruction files honest.</p>
+  <p><strong>Claude Code's .claude/-tree keeper</strong> — keeps your project tidy and your instruction files honest.</p>
 </div>
 
-Hestia watches the whole `.claude/` tree — rules, skills, agents, commands, CLAUDE.md — for references that drift out of sync with the code, then routes each fix to the tool that owns it. Read-only, never overwriting. And while Claude works, Hestia keeps the workspace tidy: parking deferred finds, saving decisions to memory, and stopping scope creep before it accumulates.
+Hestia tends the whole `.claude/` tree — rules, skills, agents, commands, CLAUDE.md — keeping references in sync with the code and routing each fix to the tool that owns it. Read-only, never overwriting. And while Claude works, Hestia keeps the workspace tidy: parking deferred finds, saving decisions to memory, and stopping scope creep before it accumulates.
 
-Hestia never tells Claude *how* to code. That's his craft. Hestia only watches what he *leaves behind*.
+Hestia never tells Claude *how* to code. That's his craft. Hestia only tends what he *leaves behind*.
 
 ---
 
@@ -40,7 +40,8 @@ Hestia runs on two tracks: **always-on** reminders injected into every session, 
 | You want to… | Invoke |
 | --- | --- |
 | Full health check of your Claude Code setup | `/hestia:checkup` |
-| Scan for stale setup files | `/hestia:freshness` |
+| Scan for stale setup files (broken path references) | `/hestia:freshness` |
+| Scan for semantically stale prose (tools, commands, structure no longer matching the code) | `/hestia:prose-drift` |
 | See all deferred `hestia:later` work | `/hestia:debt` |
 | Turn the companion on or off | `/hestia:lean on\|off` |
 | Check whether your rules and CLAUDE.md reach Claude | `/hestia:assess-rules` |
@@ -93,7 +94,7 @@ The skill that does write — `author-rules` — runs only on direct invocation 
 
 ## Status
 
-`2.0.0-beta` — sync watchdog + housekeeping. Communication pillar removed; housekeeping and all sync/freshness features intact. Beta means validated; stable `1.0.0` follows real-world mileage across diverse projects.
+`2.1.0-beta` — sync + housekeeping. Communication pillar removed; housekeeping and all sync/freshness features intact. Beta means validated; stable `1.0.0` follows real-world mileage across diverse projects.
 
 ---
 

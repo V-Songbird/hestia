@@ -108,10 +108,11 @@ If there are zero findings, say so plainly and congratulate the user — then ST
 
 ### Step 6 — Offer the next step
 
-MUST invoke `AskUserQuestion` (header `Next step`, multiSelect false). Build options only from the `fix` values that actually appear in the merged findings, plus the two always-present options:
+MUST invoke `AskUserQuestion` (header `Next step`, multiSelect false). Build options only from the `fix` values that actually appear in the merged findings, plus the always-present options:
 
 - `fix: "assess-rules"` present → **Improve my rules** → continue with the `hestia:assess-rules` skill
 - `fix: "freshness"` present → **Fix stale references** → continue with the `hestia:freshness` skill
+- Always → **Scan for stale prose** → continue with the `hestia:prose-drift` skill (checks whether CLAUDE.md and rules still describe how the project actually works — semantic staleness that path-checks miss)
 - Always → **Done for now**
 
 Then act on the choice: continue with the matching Hestia skill, or, if the user picked "Done", stop. If a named skill is not installed yet, tell the user the command to install it.

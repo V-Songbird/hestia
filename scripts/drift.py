@@ -54,14 +54,18 @@ def scan(project_root: str | None = None) -> dict:
             "freshness",
             "No stale references found.",
             residual_risk="This only checks resolvable path-like references; "
-            "prose that describes outdated behavior is not detected."))
+            "prose that describes outdated behavior is not detected. "
+            "Run /hestia:prose-drift to check semantic staleness."))
     limits.append(limit_note(
         "freshness-scope",
         "Reference detection is conservative — only path-like tokens (./ ../ ~/ "
         ".claude/ or slash+extension), @imports, and relative markdown links are "
         "verified. Time/churn signals are excluded (a fresh clone resets mtimes).",
         residual_risk="A reference written in prose or pointing outside the "
-        "project tree may be stale without showing up here."))
+        "project tree may be stale without showing up here. "
+        "Run /hestia:prose-drift to scan for semantic staleness — rules or "
+        "CLAUDE.md directions that describe tools, commands, or structure the "
+        "code no longer confirms."))
 
     # Derived staleness of the LAST checkup (read-time, never a stored grade).
     # The nudge hook can use this for cadence — a stale/aging setup warrants a
