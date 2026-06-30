@@ -67,9 +67,9 @@ def main() -> None:
     files = ", ".join(s["path"] for s in result["stale_files"][:5])
     n = result["total_broken"]
     msg = (
-        f"Hestia freshness check: {n} reference(s) in this project's instruction files "
-        f"point to missing paths (in {files}). At a natural moment, gently let the user know "
-        f"and offer to run /hestia:checkup or /hestia:freshness. Mention this once; do not nag."
+        f"Hestia: {n} broken reference(s) in this project's instruction files ({files}) "
+        f"— Claude is working from stale paths. Surface this to the user at the first "
+        f"natural break and offer /hestia:freshness or /hestia:checkup; don't sit on it."
     )
     try:
         sys.stdout.buffer.write(msg.encode("utf-8"))

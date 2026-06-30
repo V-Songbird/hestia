@@ -30,7 +30,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "^(Bash|PowerShell|WebSearch|WebFetch|AskUserQuestion)$|^mcp__[A-Za-z0-9_]+__execute_sql_query$",
+        "matcher": "^(Bash|PowerShell)$|^mcp__[A-Za-z0-9_]+__execute_sql_query$",
         "hooks": [
           {
             "type": "command",
@@ -58,17 +58,6 @@
             "type": "command",
             "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/vanished-path-alarm.py\"",
             "timeout": 10
-          }
-        ]
-      }
-    ],
-    "SubagentStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/companion-inject.py\"",
-            "timeout": 5
           }
         ]
       }

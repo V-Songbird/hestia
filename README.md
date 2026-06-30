@@ -1,12 +1,12 @@
 <div align="center">
   <img src="logo.svg" alt="Hestia" width="120" />
   <h1>Hestia</h1>
-  <p><strong>Claude Code's calm companion</strong> — keeps Claude's answers simple and clear, and keeps your project tidy.</p>
+  <p><strong>Claude Code's .claude/-tree sync watchdog</strong> — keeps your project tidy and your instruction files honest.</p>
 </div>
 
-Claude is the expert who can build anything — but ask about his work and he can't stop talking: every step narrated, every decision explained, in language only another engineer would follow. Hestia rests a hand on his shoulder and reminds him of the room he's in: tell the person what changed and why it matters, not the play-by-play. And while he builds, Hestia keeps the workspace tidy — parking deferred work, saving decisions, and watching the whole `.claude/` tree (rules, skills, agents, commands, CLAUDE.md) for references that drift out of sync with the code, then routing each fix to the tool that owns it — read-only, never overwriting.
+Hestia watches the whole `.claude/` tree — rules, skills, agents, commands, CLAUDE.md — for references that drift out of sync with the code, then routes each fix to the tool that owns it. Read-only, never overwriting. And while Claude works, Hestia keeps the workspace tidy: parking deferred finds, saving decisions to memory, and stopping scope creep before it accumulates.
 
-Hestia never tells Claude *how* to code. That's his craft. Hestia only watches how he *talks about it* and what he *leaves behind*.
+Hestia never tells Claude *how* to code. That's his craft. Hestia only watches what he *leaves behind*.
 
 ---
 
@@ -29,11 +29,10 @@ Hestia runs on two tracks: **always-on** reminders injected into every session, 
 ### Always on
 
 > [!NOTE]
-> Two reminders are injected automatically into every session. You never invoke them — they run. They're on by default; turn them off for a project with `/hestia:lean off`.
+> One reminder is injected automatically into every session. You never invoke it — it runs. On by default; turn it off for a project with `/hestia:lean off`.
 
 | Reminder | What it keeps in mind |
 | --- | --- |
-| **Keep it simple and clear** | Lead with the outcome in plain words — not the step-by-step of how Claude got there, not jargon the user didn't introduce. Terse is welcome; clarity wins when brevity would blur the meaning. Especially: when a message is the user's first look at a long run, re-ground the reader instead of continuing the working thread. |
 | **Keep the workspace tidy** | Park out-of-scope finds as `hestia:later <what> — revisit when <trigger>` instead of chasing them. Save decisions and their reasoning to memory — never code or file contents. |
 
 ### On demand
@@ -94,7 +93,7 @@ The skill that does write — `author-rules` — runs only on direct invocation 
 
 ## Status
 
-`1.6.0-beta` — two jobs: communication and housekeeping (code craft is the model's own). Housekeeping now includes event-triggered freshness watchdogs that catch instruction-file references the moment a command breaks them. Beta means validated; stable `1.0.0` follows real-world mileage across diverse projects.
+`2.0.0-beta` — sync watchdog + housekeeping. Communication pillar removed; housekeeping and all sync/freshness features intact. Beta means validated; stable `1.0.0` follows real-world mileage across diverse projects.
 
 ---
 

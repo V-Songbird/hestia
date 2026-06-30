@@ -1,11 +1,9 @@
-"""Tests for companion-inject.py — the SessionStart / SubagentStart injector.
+"""Tests for companion-inject.py — the SessionStart injector.
 
 Covers:
-  - SessionStart (on by default) emits the full body of both reminders.
+  - SessionStart (on by default) emits the full body of the housekeeping reminder.
   - The companion is on/off only — no verbosity levels. `off` emits nothing;
     anything else (incl. absent file) is on.
-  - SubagentStart emits the terse subagent=yes subset (communication only),
-    wrapped in the hookSpecificOutput JSON contract — not housekeeping, not full.
   - The hook never crashes on missing / empty / malformed stdin.
 """
 
@@ -20,11 +18,9 @@ import pytest
 HOOK = Path(__file__).parent.parent / "hooks" / "companion-inject.py"
 PYTHON = sys.executable
 
-# Markers tied to the two-pillar doctrine (skills/lean/doctrine.md).
-COMMS_TERSE = "- **Talk to the stakeholder:**"
+# Marker tied to the housekeeping reminder (skills/lean/doctrine.md).
 HOUSE_TERSE = "- **Keep the workspace tidy:**"
-COMMS_FULL = "## Talk to the stakeholder, not the console"   # full-body heading only
-HOUSE_FULL = "## Keep the workspace tidy"      # full-body heading
+HOUSE_FULL = "## Keep the workspace tidy"
 
 
 def run_hook(project: Path, stdin_data: str | None) -> subprocess.CompletedProcess:
@@ -47,10 +43,6 @@ def session_event(source: str | None = None) -> str:
     if source is not None:
         d["source"] = source
     return json.dumps(d)
-
-
-def subagent_event() -> str:
-    return json.dumps({"hook_event_name": "SubagentStart"})
 
 
 def turn_event() -> str:
@@ -96,17 +88,16 @@ class TestSessionStart:
             json.loads(r.stdout)
         assert "# Hestia" in r.stdout
 
-    def test_full_brief_includes_both_reminders(self, project):
+    def test_full_brief_includes_housekeeping_reminder(self, project):
         r = run_hook(project, session_event())
-        assert "Talk to the stakeholder" in r.stdout
         assert "Keep the workspace tidy" in r.stdout
+        assert "Talk to the stakeholder" not in r.stdout
 
     def test_default_mode_is_on(self, project):
-        """No lean-mode file -> on -> full bodies of both reminders."""
+        """No lean-mode file -> on -> full body of housekeeping reminder."""
         r = run_hook(project, session_event())
-        # COMMS_FULL appears only in the full communication body, never terse.
-        assert COMMS_FULL in r.stdout
-        assert COMMS_TERSE not in r.stdout
+        assert HOUSE_FULL in r.stdout
+        assert HOUSE_TERSE not in r.stdout
 
 
 # ---------------------------------------------------------------------------
@@ -116,7 +107,7 @@ class TestSessionStart:
 class TestSessionStartSource:
     def test_startup_uses_initial_preamble(self, project):
         out = run_hook(project, session_event("startup")).stdout
-        assert "calm companion" in out           # initial preamble text
+        assert "sync watchdog" in out           # initial preamble text
         assert "just resumed or compressed" not in out
 
     def test_compact_uses_reanchor_preamble(self, project):
@@ -128,15 +119,14 @@ class TestSessionStartSource:
         out = run_hook(project, session_event("resume")).stdout
         assert "just resumed or compressed" in out
 
-    def test_reanchor_keeps_full_order_bodies(self, project):
+    def test_reanchor_keeps_full_order_body(self, project):
         """Re-anchor changes the framing, never drops detail."""
         out = run_hook(project, session_event("compact")).stdout
-        assert COMMS_FULL in out                  # full communication body still present
         assert HOUSE_FULL in out
 
     def test_unknown_source_falls_back_to_initial(self, project):
         out = run_hook(project, session_event("wibble")).stdout
-        assert "calm companion" in out
+        assert "sync watchdog" in out
         assert "just resumed or compressed" not in out
 
 
@@ -154,7 +144,7 @@ class TestTurnNudge:
         with pytest.raises(json.JSONDecodeError):
             json.loads(r.stdout)                  # raw, not JSON-wrapped
 
-    def test_rotation_covers_multiple_orders(self, project):
+    def test_rotation_covers_multiple_lines(self, project):
         """Across many turns the pool yields more than one distinct line."""
         seen = {run_hook(project, turn_event()).stdout.strip() for _ in range(40)}
         assert len(seen) > 1
@@ -171,7 +161,7 @@ class TestTurnNudge:
 
 class TestPreToolUse:
     def test_edit_emits_nothing(self, project):
-        """Edit no longer carries a nudge — code craft is ceded."""
+        """Edit carries no nudge."""
         r = run_hook(project, pretool_event("Edit"))
         assert r.returncode == 0
         assert r.stdout.strip() == ""
@@ -181,10 +171,11 @@ class TestPreToolUse:
         ctx = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
         assert ctx.startswith("[Hestia] Tidy:")
 
-    def test_websearch_gets_honesty_nudge(self, project):
+    def test_websearch_emits_nothing(self, project):
+        """WebSearch no longer has a nudge after communication pillar removal."""
         r = run_hook(project, pretool_event("WebSearch"))
-        ctx = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
-        assert "Be honest" in ctx
+        assert r.returncode == 0
+        assert r.stdout.strip() == ""
 
     def test_mcp_sql_matches_regex_group(self, project):
         r = run_hook(project, pretool_event("mcp__webstorm__execute_sql_query"))
@@ -203,46 +194,6 @@ class TestPreToolUse:
 
 
 # ---------------------------------------------------------------------------
-# SubagentStart — compact subset, JSON-wrapped
-# ---------------------------------------------------------------------------
-
-class TestSubagentStart:
-    def test_emits_valid_json_contract(self, project):
-        r = run_hook(project, subagent_event())
-        assert r.returncode == 0
-        payload = json.loads(r.stdout)
-        hso = payload["hookSpecificOutput"]
-        assert hso["hookEventName"] == "SubagentStart"
-        assert isinstance(hso["additionalContext"], str)
-        assert hso["additionalContext"]
-
-    def test_includes_communication_reminder(self, project):
-        r = run_hook(project, subagent_event())
-        ctx = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
-        assert COMMS_TERSE in ctx
-
-    def test_excludes_housekeeping(self, project):
-        """Housekeeping is the parent session's job, not a subagent's."""
-        r = run_hook(project, subagent_event())
-        ctx = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
-        assert HOUSE_TERSE not in ctx
-
-    def test_subagent_brief_is_smaller_than_full(self, project):
-        full = run_hook(project, session_event()).stdout
-        sub = json.loads(
-            run_hook(project, subagent_event()).stdout
-        )["hookSpecificOutput"]["additionalContext"]
-        assert len(sub) < len(full)
-
-    def test_subagent_uses_terse_not_full(self, project):
-        """Subagent gets the terse one-liner, not the full body."""
-        r = run_hook(project, subagent_event())
-        ctx = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
-        assert COMMS_TERSE in ctx       # terse bullet form
-        assert COMMS_FULL not in ctx    # full body NOT included
-
-
-# ---------------------------------------------------------------------------
 # off mode
 # ---------------------------------------------------------------------------
 
@@ -250,12 +201,6 @@ class TestOffMode:
     def test_session_off_emits_nothing(self, project):
         set_mode(project, "off")
         r = run_hook(project, session_event())
-        assert r.returncode == 0
-        assert r.stdout.strip() == ""
-
-    def test_subagent_off_emits_nothing(self, project):
-        set_mode(project, "off")
-        r = run_hook(project, subagent_event())
         assert r.returncode == 0
         assert r.stdout.strip() == ""
 
@@ -285,7 +230,7 @@ class TestRobustness:
             set_mode(project, mode)
             r = run_hook(project, session_event())
             assert r.returncode == 0
-            assert COMMS_FULL in r.stdout  # full brief, not off
+            assert HOUSE_FULL in r.stdout  # full brief, not off
 
 
 # ---------------------------------------------------------------------------
@@ -317,7 +262,7 @@ class TestBoundary:
             out = run_hook(project, posttool_event()).stdout
         ctx = json.loads(out)["hookSpecificOutput"]["additionalContext"]
         assert ctx.startswith("[Hestia] Long run")
-        assert "handoff" in ctx
+        assert "hestia:later" in ctx
 
     def test_user_prompt_resets_counter(self, project):
         run_hook(project, userprompt_event())

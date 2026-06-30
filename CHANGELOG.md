@@ -2,6 +2,28 @@
 
 All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
 
+## [2.0.0-beta] — 2026-06-30
+
+### Removed — communication pillar
+
+The communication pillar ("Talk to the stakeholder, not the console") is removed. Prior A/B testing showed no measurable effect on output quality; the watchdog identity doesn't need it.
+
+- **`skills/lean/doctrine.md`** — `ORDER id=communication` block and all `id=communication` NUDGES lines removed. Preamble rewritten to watchdog identity.
+- **`hooks/companion-inject.py`** — `build_subagent_context()` removed; `SubagentStart` branch removed from `main()`; `FALLBACK` and `BOUNDARY_NUDGE` rewritten to housekeeping-only. `SUBAGENT_FALLBACK` removed.
+- **`hooks/hooks.json`** — `SubagentStart` hook entry dropped (nothing to inject there); `PreToolUse` matcher trimmed to `^(Bash|PowerShell)$|^mcp__...__execute_sql_query$` (removes `WebSearch|WebFetch|AskUserQuestion`).
+- **`skills/lean/SKILL.md`** — updated to describe one reminder; `communication` order id removed from self-audit section.
+- **`tests/test_companion_inject.py`** — `TestSubagentStart` class removed; comms-specific assertions updated; `test_websearch_gets_honesty_nudge` replaced by `test_websearch_emits_nothing`.
+
+### Changed — freshness-nudge message rewritten
+
+Shorter, direct, urgent. Old: "At a natural moment, gently let the user know … Mention this once; do not nag." New: "Claude is working from stale paths. Surface this to the user at the first natural break … don't sit on it."
+
+### Changed — identity copy
+
+README, `plugin.json`, and marketplace description rewritten to lead with ".claude/-tree sync watchdog + housekeeping". `communication` keyword removed.
+
+All prior tests pass (suite unchanged minus the removed SubagentStart class and one replaced comms nudge test).
+
 ## [1.8.0-beta] — 2026-06-30
 
 ### Added — CI drift gate

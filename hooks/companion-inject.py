@@ -1,22 +1,19 @@
 #!/usr/bin/env python3
 """Hestia companion brief injection hook.
 
-Runs on SessionStart, SubagentStart, UserPromptSubmit, PreToolUse, and
-PostToolUse. Reads `.hestia/lean-mode` (on unless the file says `off`) and injects
-the companion doctrine as hidden context, tailored to each moment. Nothing when off.
+Runs on SessionStart, UserPromptSubmit, PreToolUse, and PostToolUse. Reads
+`.hestia/lean-mode` (on unless the file says `off`) and injects the companion
+doctrine as hidden context, tailored to each moment. Nothing when off.
 
-  - SessionStart  -> the full brief (both reminder bodies).
+  - SessionStart  -> the full brief (housekeeping reminder body).
     The SessionStart `source` selects the preamble framing, not the body:
       startup / clear  -> initial preamble (first load)
       resume / compact -> re-anchor preamble (counters post-compaction drift)
-    The bodies are identical either way, so a re-brief after compaction never
+    The body is identical either way, so a re-brief after compaction never
     loses detail. Unknown / absent source -> initial preamble.
-  - SubagentStart -> the terse form of only the subagent=yes reminders
-    (communication), regardless of level. A worker reports to the user too,
-    but the housekeeping reminder is the parent session's job.
   - UserPromptSubmit -> ONE line picked at random from the turn-rotation pool.
-    Rotating which order is spotlighted (and its wording) stops Claude
-    pattern-matching a fixed string as boilerplate and tuning it out.
+    Rotating the wording stops Claude pattern-matching a fixed string as
+    boilerplate and tuning it out.
   - PreToolUse    -> ONE situational line picked at random from the NUDGES lines
     whose tools= matcher matches the tool about to run. Emits nothing for an
     unmatched tool. Injection only; never gates the tool call.
@@ -26,8 +23,8 @@ the companion doctrine as hidden context, tailored to each moment. Nothing when 
     of hundreds of calls back at SessionStart. Silent below threshold.
 
 Output contract (native Claude Code):
-  - SessionStart / UserPromptSubmit          -> raw text on stdout is added.
-  - SubagentStart / PreToolUse / PostToolUse -> context must be wrapped in
+  - SessionStart / UserPromptSubmit -> raw text on stdout is added.
+  - PreToolUse / PostToolUse        -> context must be wrapped in
     hookSpecificOutput JSON (raw stdout is ignored for these events).
 
 Best-effort throughout: a stale or missing file must never break the hook.
@@ -48,25 +45,20 @@ REANCHOR_SOURCES = {"resume", "compact"}
 DOCTRINE = Path(__file__).resolve().parent.parent / "skills" / "lean" / "doctrine.md"
 
 FALLBACK = (
-    "Talk to the user as the stakeholder who owns the outcome: lead with what "
-    "changed and why it matters to them, in plain language and their own words. "
-    "Skip the play-by-play, the hedging, and jargon they didn't use; give depth "
-    "when they ask for it. Keep the workspace tidy — park out-of-scope work as a "
+    "Keep the workspace tidy — park out-of-scope work as a "
     "`hestia:later <what> — revisit when <trigger>` note, and save decisions "
     "(not code) to memory."
 )
 
-SUBAGENT_FALLBACK = FALLBACK
 TURN_FALLBACK = "[Hestia] " + FALLBACK
 
 # Boundary re-injection: after this many tool calls in one run, re-anchor the
 # re-grounding reminder so it lands near the handoff (not back at SessionStart).
 BOUNDARY_THRESHOLD = 10
 BOUNDARY_NUDGE = (
-    "[Hestia] Long run — your next message to the user is a handoff, not a "
-    "continuation. Open with the outcome (what's now true, not what you did), "
-    "give each file or flag its own plain clause, and drop the working shorthand. "
-    "If something blocks you, lead with it."
+    "[Hestia] Long run — before wrapping up, park any scope-creep you set aside "
+    "as `hestia:later <what> — revisit when <trigger>`, and save any decisions "
+    "to memory (not code or file contents)."
 )
 
 # id=<bareword> | tools="<quoted>"  — the value is either a quoted string or a bareword.
@@ -224,17 +216,6 @@ def build_pretool_context(tool_name: str | None) -> str:
     return "[Hestia] " + random.choice(matches)
 
 
-def build_subagent_context() -> str:
-    """Compact brief for subagents: the terse form of the subagent=yes reminders
-    only, regardless of session level. A worker reports to the user too."""
-    text = _load_doctrine()
-    if text is None:
-        return SUBAGENT_FALLBACK
-    d = parse_doctrine(text)
-    pieces = [o["terse"] for o in d["orders"] if o["subagent"]]
-    return _assemble(d["initial"], pieces) if pieces else SUBAGENT_FALLBACK
-
-
 def read_input() -> tuple[str, str | None, str | None, str | None]:
     """(hook_event_name, source, tool_name, session_id); safe defaults on bad input."""
     try:
@@ -297,9 +278,7 @@ def main() -> None:
     if is_off():
         sys.exit(0)
 
-    if event == "SubagentStart":
-        payload = _wrap("SubagentStart", build_subagent_context())
-    elif event == "PostToolUse":
+    if event == "PostToolUse":
         if not _boundary_due(session_id):
             sys.exit(0)  # under threshold -> stay silent
         payload = _wrap("PostToolUse", BOUNDARY_NUDGE)

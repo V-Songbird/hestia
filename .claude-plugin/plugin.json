@@ -1,7 +1,7 @@
 {
   "name": "hestia",
-  "version": "1.8.0-beta",
-  "description": "A calm companion for Claude Code: keeps Claude's answers clear, and keeps your .claude/ config honest — it watches the whole tree (rules, skills, agents, commands, CLAUDE.md) for drift from the code and routes each fix to the tool that owns it. Read-only by default.",
+  "version": "2.0.0-beta",
+  "description": "Claude Code's .claude/-tree sync watchdog: watches the whole tree (rules, skills, agents, commands, CLAUDE.md) for drift from the code and routes each fix to the tool that owns it. Keeps the workspace tidy — parks deferred work, saves decisions to memory. Read-only by default.",
   "license": "MIT",
   "author": {
     "name": "Songbird",
@@ -10,8 +10,9 @@
   "homepage": "https://github.com/V-Songbird/hestia",
   "repository": "https://github.com/V-Songbird/hestia",
   "keywords": [
-    "communication",
     "housekeeping",
+    "sync",
+    "watchdog",
     "companion",
     "CLAUDE.md",
     "rules",
