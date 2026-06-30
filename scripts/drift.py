@@ -83,7 +83,13 @@ def scan(project_root: str | None = None) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser(description="Scan instruction files for stale references.")
     ap.add_argument("--project-root", default=None)
-    emit(scan(ap.parse_args().project_root))
+    ap.add_argument("--check", action="store_true",
+                    help="exit non-zero if any stale reference is found (for CI gates)")
+    args = ap.parse_args()
+    result = scan(args.project_root)
+    emit(result)
+    if args.check and result["stale_files"]:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
