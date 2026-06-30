@@ -18,7 +18,7 @@ allowed-tools: Read, Write, Glob, Bash, AskUserQuestion, TaskCreate, TaskUpdate,
 
 # Rules Author — Quality-Scored Rule Creation
 
-Create `.claude/rules/` files that are specific, scoped, and quality-scored.
+Create `.claude/rules/` files that are specific, scoped, and quality-scored — best used to capture a convention Hestia DETECTED: a coverage gap from `/hestia:assess-rules`, or a pattern in the code the rules don't yet cover. Drafted, scored, then written on your approval.
 **Language:** Rule drafting and scoring is English-only.
 
 If arguments are provided, treat them as the rule topic: $ARGUMENTS

@@ -2,10 +2,12 @@
 name: assess-rules
 description: >-
   Rules quality auditor for existing Claude Code instruction files (CLAUDE.md,
-  .claude/rules/). Part of Hestia's rules engine pillar. Grades, scores, audits,
-  reviews, and critiques the structural clarity of existing rules. Reads and
-  evaluates only — never creates new rules (that's /hestia:author-rules), never
-  reviews code or PRs, and ignores non-Claude-Code config like eslint or prettier.
+  .claude/rules/). Part of Hestia's rules engine pillar. Leads with whether each
+  rule actually REACHES Claude — enforceable vs folklore, and which rules should
+  be deterministic hooks (those route to the hookify plugin) — with structural-
+  clarity scoring as supporting detail. Reads and evaluates only — never creates
+  new rules (that's /hestia:author-rules), never reviews code or PRs, and ignores
+  non-Claude-Code config like eslint or prettier.
 when_to_use: >-
   Trigger when a user wants feedback on rule files they already have: "are my
   rules any good", "look at my rules", "check my CLAUDE.md", "grade my
@@ -18,7 +20,7 @@ allowed-tools: Bash, Read, Write, Edit, Glob, AskUserQuestion, TodoWrite, TaskCr
 
 # Rules Assess — Quality Scoring
 
-Score the project's Claude Code instruction files for structural clarity — how clearly Claude can parse and apply each rule.
+Audit the project's Claude Code instruction files for whether each rule reaches Claude — enforceable vs folklore first, which rules belong in a hook second (route those to `hookify`), structural clarity as supporting detail.
 **Language:** Scoring is English-only. Non-English rules will receive inaccurate scores.
 If arguments are provided, treat them as flags: $ARGUMENTS
 Supported flags: `--fix` (suggest + apply rewrites), `--verbose` (detailed factor breakdown), `--json` (machine-readable)
@@ -310,7 +312,10 @@ Files modified:
 ...
 
 Review with `git diff` before committing. The PROMOTIONS doc has official-docs
-links per primitive to help you promote these items when you're ready.
+links per primitive to help you promote these items when you're ready. For hook
+promotions specifically, the `hookify` plugin codifies a rule as an enforcement
+hook from one command (`/hookify`) — note it writes gitignored `*.local.md`, so
+the hook stays team-local.
 ```
 
 If this was the final selected sub-step (no rewrite and no reorganize queued after it), mark the umbrella task `completed` via `TaskUpdate` and continue to Step 6. Otherwise continue to Step 5b (if `selected_changes.rewrite`) or Step 5c (if only `selected_changes.reorganize`) — the umbrella stays `in_progress` and its `activeForm` will be mutated at the start of the next sub-step.
