@@ -1,6 +1,6 @@
 {
   "name": "hestia",
-  "version": "1.7.0-beta",
+  "version": "1.8.0-beta",
   "description": "A calm companion for Claude Code: keeps Claude's answers clear, and keeps your .claude/ config honest — it watches the whole tree (rules, skills, agents, commands, CLAUDE.md) for drift from the code and routes each fix to the tool that owns it. Read-only by default.",
   "license": "MIT",
   "author": {

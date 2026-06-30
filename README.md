@@ -60,6 +60,18 @@ Run this in any project. Hestia inventories your entire Claude Code setup — `C
 
 ---
 
+## In CI
+
+Fail a build when an instruction-file reference goes stale:
+
+```bash
+python scripts/drift.py --check   # exits non-zero on any stale reference
+```
+
+Point it at the installed plugin's `scripts/drift.py` (outside a Claude session, `${CLAUDE_PLUGIN_ROOT}` is unset).
+
+---
+
 ## Read-only by default
 
 > [!NOTE]

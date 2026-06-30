@@ -2,6 +2,16 @@
 
 All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
 
+## [1.8.0-beta] — 2026-06-30
+
+### Added — CI drift gate
+
+- **`drift.py --check`** — exits non-zero when any instruction-file reference is stale, so a pipeline can fail the build on drift. The team/CI path for the sync mission; reuses the existing scan (one flag, `raise SystemExit(1)`). 3 tests.
+
+Considered and dropped: running `freshness-nudge` on `UserPromptSubmit` for mid-session drift warnings. The per-turn scan is free of tokens, but `freshness-nudge`'s `setup_stale` override bypasses its throttle — harmless once-per-session on `SessionStart`, but per-turn token spam on `UserPromptSubmit` for a stale-setup project. The mid-session external-drift gap is narrow (SessionStart covers it next session), so it isn't worth an event-aware guard right now.
+
+617 tests pass (3 new).
+
 ## [1.7.0-beta] — 2026-06-30
 
 ### Changed — housekeeping pillar refocused on whole-`.claude/`-tree sync + detect-and-route
