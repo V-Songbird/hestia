@@ -4,7 +4,7 @@
   <p><strong>Claude Code's calm companion</strong> — keeps Claude's answers simple and clear, and keeps your project tidy.</p>
 </div>
 
-Claude is the expert who can build anything — but ask about his work and he can't stop talking: every step narrated, every decision explained, in language only another engineer would follow. Hestia rests a hand on his shoulder and reminds him of the room he's in: tell the person what changed and why it matters, not the play-by-play. And while he builds, Hestia keeps the workspace tidy — parking deferred work, saving decisions, catching instruction files that have gone stale.
+Claude is the expert who can build anything — but ask about his work and he can't stop talking: every step narrated, every decision explained, in language only another engineer would follow. Hestia rests a hand on his shoulder and reminds him of the room he's in: tell the person what changed and why it matters, not the play-by-play. And while he builds, Hestia keeps the workspace tidy — parking deferred work, saving decisions, and watching the whole `.claude/` tree (rules, skills, agents, commands, CLAUDE.md) for references that drift out of sync with the code, then routing each fix to the tool that owns it — read-only, never overwriting.
 
 Hestia never tells Claude *how* to code. That's his craft. Hestia only watches how he *talks about it* and what he *leaves behind*.
 

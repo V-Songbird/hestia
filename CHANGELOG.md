@@ -2,6 +2,20 @@
 
 All notable changes to Hestia are documented here. Versions are owned by `plugin.json` in this repo — bump here, not in the marketplace index.
 
+## [1.7.0-beta] — 2026-06-30
+
+### Changed — housekeeping pillar refocused on whole-`.claude/`-tree sync + detect-and-route
+
+Repositioned around the niche the shipping competitors (mex, Caliber) leave open: keeping the entire `.claude/` tree — rules, skills, agents, commands, hooks, CLAUDE.md — in sync with the code, read-only, and routing each fix to the tool that owns it rather than rewriting config itself. The communication pillar is unchanged.
+
+- **Orchestration core (new).** `scripts/_data/handoff_routes.json` maps each drift class to its owning plugin; `scripts/handoff.py` (`routes`/`stage`/`list`/`clear`) stages a handoff payload under `.hestia/handoffs/` and names the tool. Claude Code exposes no programmatic cross-plugin invocation API (verified against the plugins reference), so Hestia detects and *prepares* a handoff — it never dispatches. 10 tests.
+- **`freshness` routes the fix.** A dead ref in CLAUDE.md → `claude-md-improver`; inside a skill → `skill-creator`; in rules/agents/commands → Hestia's own read-only lane. `checkup` routes through `freshness`, so the external routing is transitive — no separate wiring. No in-session file-staging; the report is the surfacing.
+- **Removed `format-rules`.** It only reformatted rule files (split bullets, blank-line separation) — pure presentation, zero contribution to keeping config in sync. (−283 lines.)
+- **Narrowed the rules engine.** `assess-rules` now leads with whether a rule *reaches* Claude (enforceable vs folklore) and routes hook-candidate rules to the `hookify` plugin; `author-rules` reframed to capture a *detected* gap/drift. The F1–F8 scoring engine is untouched — it computes the enforceability signal the new framing leads with.
+- Deferred (await the installed Claude Code version): the CI/team path (a `Setup`-mode check) and moving watchdogs onto the observability-only `FileChanged`/`ConfigChange` hooks. `handoff.py`'s `stage`/`list`/`clear` persistence is the bridge those hooks will use.
+
+614 tests pass (10 new).
+
 ## [1.6.0-beta] — 2026-06-29
 
 ### Added — vanished-path citation alarm (PostToolUse)
