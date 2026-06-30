@@ -6,8 +6,8 @@ description: >-
   re-read CLAUDE.md, README.md, AGENTS.md, and .claude/rules/*.md after structural changes
   (renames, moves, deletions); verify file paths before citing them; and audit recommendation
   files for stale references when editing them. Copies one pre-defined file into .claude/rules/
-  — never authors new rules from scratch (use /hestia:author-rules), audits existing rules
-  (use /hestia:assess-rules), or reformats them (use /hestia:format-rules).
+  — never authors new rules from scratch (use /hestia:author-rules) or audits existing rules
+  (use /hestia:assess-rules).
   When the destination already exists, the user is asked via AskUserQuestion buttons
   whether to overwrite, merge, or cancel.
 when_to_use: >-
@@ -25,8 +25,7 @@ directory. The bundled rules teach Claude to re-read its own instruction files
 after structural changes so it stops generating stale path references.
 
 This skill ships ONE file. It does not author new rules (use
-`/hestia:author-rules`), audit existing rules (use `/hestia:assess-rules`), or
-reformat rule files for readability (use `/hestia:format-rules`).
+`/hestia:author-rules`) or audit existing rules (use `/hestia:assess-rules`).
 
 The bundled rules file lives at
 `${CLAUDE_SKILL_DIR}/assets/recommendation-files.md` inside the plugin
@@ -177,4 +176,3 @@ action taken in Phase 3 and send it verbatim.
 - For the bundled rules file content, see [assets/recommendation-files.md](assets/recommendation-files.md).
 - For authoring new rules from scratch (after the primer is installed), dispatch `/hestia:author-rules`.
 - For auditing existing rules for structural quality, dispatch `/hestia:assess-rules`.
-- For reformatting rule files for readability, dispatch `/hestia:format-rules`.

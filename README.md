@@ -46,7 +46,6 @@ Hestia runs on two tracks: **always-on** reminders injected into every session, 
 | Turn the companion on or off | `/hestia:lean on\|off` |
 | Check whether your rules and CLAUDE.md reach Claude | `/hestia:assess-rules` |
 | Write new rules with live quality scoring | `/hestia:author-rules` |
-| Fix rule formatting | `/hestia:format-rules` |
 | Install the curated starter rules file | `/hestia:primer` |
 
 ---
@@ -66,7 +65,7 @@ Run this in any project. Hestia inventories your entire Claude Code setup — `C
 > [!NOTE]
 > Hestia's audits, watchers, and analysis tools **never modify your files**. Checkup and Freshness only observe and report.
 
-The skills that do write — `author-rules` and `format-rules` — run only on direct invocation and always show you what they intend to create before touching anything.
+The skill that does write — `author-rules` — runs only on direct invocation and always shows you what it intends to create before touching anything.
 
 ---
 

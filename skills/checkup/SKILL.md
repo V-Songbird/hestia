@@ -112,7 +112,6 @@ MUST invoke `AskUserQuestion` (header `Next step`, multiSelect false). Build opt
 
 - `fix: "assess-rules"` present → **Improve my rules** → continue with the `hestia:assess-rules` skill
 - `fix: "freshness"` present → **Fix stale references** → continue with the `hestia:freshness` skill
-- Rules exist (`summary.rules` > 0) → **Tidy rule formatting** → continue with the `hestia:format-rules` skill (structure only, no content change)
 - Always → **Done for now**
 
 Then act on the choice: continue with the matching Hestia skill, or, if the user picked "Done", stop. If a named skill is not installed yet, tell the user the command to install it.
