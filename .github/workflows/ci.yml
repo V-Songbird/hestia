@@ -38,3 +38,9 @@ jobs:
 
       - name: Run test suite
         run: node --test tests/
+
+      - name: Verify tests do not mutate fixtures
+        run: |
+          node --test tests/
+          git diff --exit-code -- tests/fixtures/
+        shell: bash

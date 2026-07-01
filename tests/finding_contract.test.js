@@ -16,7 +16,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const { runScript } = require('./helpers');
+const { runScript, makeSampleProject } = require('./helpers');
 const _lib = require('../scripts/_lib');
 
 const FIXTURES_DIR = path.join(__dirname, 'fixtures');
@@ -76,7 +76,7 @@ describe('CiteOrDrop', () => {
   });
 
   it('checkup findings all carry a locator', () => {
-    const out = runScript('checkup.js', null, ['--project-root', SAMPLE_PROJECT]);
+    const out = runScript('checkup.js', null, ['--project-root', makeSampleProject()]);
     for (const f of out.findings) {
       assert.ok(f.file, `finding has no file locator: ${JSON.stringify(f)}`);
       assert.ok(f.location, `finding has no location: ${JSON.stringify(f)}`);
@@ -145,7 +145,7 @@ describe('HonestLimits', () => {
   });
 
   it('checkup always emits limits', () => {
-    const out = runScript('checkup.js', null, ['--project-root', SAMPLE_PROJECT]);
+    const out = runScript('checkup.js', null, ['--project-root', makeSampleProject()]);
     assert.ok('limits' in out);
     assert.ok(out.limits.length >= 1);
     for (const n of out.limits) {
@@ -182,7 +182,7 @@ describe('NoCounterfactual', () => {
   });
 
   it('checkup counts are plain tallies', () => {
-    const out = runScript('checkup.js', null, ['--project-root', SAMPLE_PROJECT]);
+    const out = runScript('checkup.js', null, ['--project-root', makeSampleProject()]);
     assert.deepEqual(new Set(Object.keys(out.counts)), new Set(['high', 'medium', 'low', 'info']));
     for (const v of Object.values(out.counts)) {
       assert.equal(Number.isInteger(v), true);
